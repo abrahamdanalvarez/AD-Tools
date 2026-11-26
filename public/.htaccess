@@ -1,0 +1,20 @@
+# Privora static hosting rules (Apache). Shipped inside dist/.
+# Security headers, CSP and COOP/COEP are added in Phase 09.
+
+<IfModule mod_mime.c>
+  AddType application/wasm .wasm
+  AddType text/javascript .mjs
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Hashed build assets never change, so cache them for a year.
+  <FilesMatch "^.+-[A-Za-z0-9_-]{8,}\.(js|css|woff2|wasm)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # Always revalidate the entry page so new deploys show up.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+Options -Indexes

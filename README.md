@@ -7,7 +7,7 @@ Privora is a free, privacy-first collection of online PDF, image, audio, video, 
 
 All the tools. None of the uploads. Every tool runs entirely in your browser. Your files are never uploaded to our servers, stored by our website or sent to outside processing services. No account needed.
 
-> **Status:** early setup. No tools are available yet. See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status:** the foundation is in place. No tools are available yet. See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## How it works
 
@@ -19,9 +19,13 @@ Requires Node.js (development and build only).
 
 ```bash
 npm ci
-npm run dev     # local dev server
-npm run build   # production build into dist/
+npm run dev         # local dev server
+npm test            # unit tests
+npm run build       # production build into dist/
+npm run test:e2e    # browser tests against dist/ (run the build first)
 ```
+
+The first time you run the e2e tests, install the browser with `npx playwright install chromium`.
 
 ## Deployment
 
@@ -40,6 +44,10 @@ No server runtime, database or backend is required.
 - [Privacy](docs/PRIVACY.md)
 - [Licences](docs/LICENCES.md)
 - [Decisions](docs/DECISIONS.md)
+- [Repository audit](docs/REPOSITORY_AUDIT.md)
+- [Tool inventory](docs/TOOL_INVENTORY.md)
+- [Security audit](docs/SECURITY_AUDIT.md)
+- [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 ## Author
 

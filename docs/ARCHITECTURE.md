@@ -1,6 +1,19 @@
 # Architecture
 
-> Draft. The concrete structure is decided in Phase 01 (upstream audit) and Phase 03 (foundation and registry). Decisions are logged in `DECISIONS.md`.
+> The foundation was set up in Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). The app shell and registry UI arrive in Phase 03.
+
+## Current state (Phase 01)
+
+| Item | Location |
+|---|---|
+| Entry | `index.html` → `src/main.tsx` → `src/app/App.tsx` (minimal shell) |
+| Registry | `src/registry/` (`types.ts`, `registry.ts`; only `verified` tools are visible) |
+| Styles | `src/index.css` (Tailwind 4, scans `src/` only) |
+| shadcn/ui | `components.json` and the `cn()` helper in `src/lib/utils.ts`. Components are added per tool. |
+| Apache rules | `public/.htaccess` → copied to `dist/` (WASM MIME, caching, no directory listing) |
+| Unit tests | `src/**/*.test.ts(x)`, Vitest + jsdom |
+| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs` |
+| Build | `npm run build` = `tsc --noEmit && vite build` → `dist/` (relative `./` asset paths) |
 
 ## Constraints
 

@@ -1,0 +1,4 @@
+/* Scan only src/ for classes, so docs and local files never leak into the CSS. */
+@import "tailwindcss" source(".");
+
+/* Brand tokens and fonts are added in Phase 02 (see docs/BRAND.md). */
