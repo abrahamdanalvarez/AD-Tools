@@ -49,7 +49,7 @@ export function SupportedFormats({ tool }: { tool: ToolDefinition }) {
 
 export function ToolSettings({ children }: { children: ReactNode }) {
   return (
-    <fieldset className="grid gap-4 rounded-xl border border-border bg-surface p-5">
+    <fieldset className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 rounded-xl border border-border bg-surface p-5">
       <legend className="px-1 text-sm font-semibold">Settings</legend>
       {children}
     </fieldset>

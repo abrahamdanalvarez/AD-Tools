@@ -12,6 +12,16 @@ Privora includes the following open-source software in its production build. Eac
 | Tailwind CSS (generated CSS, including Preflight) | 4.3.5 | MIT | © Tailwind Labs, Inc. |
 | Radix UI Primitives (radix-ui and @radix-ui/*) | 1.8.1 | MIT | © 2022 WorkOS |
 | shadcn/ui (component patterns adapted in `src/components/ui`) | n/a | MIT | © 2023 shadcn |
+| pdf-lib | 1.17.1 | MIT | © 2019 Andrew Dillon |
+| @pdf-lib/standard-fonts | 1.0.0 | MIT | © 2018 Andrew Dillon |
+| @pdf-lib/upng | 1.0.1 | MIT | © 2017 Photopea |
+| pako | 1.0.11 | MIT AND Zlib | © 2014-2017 Vitaly Puzrin and Andrei Tuputcyn |
+| tslib | 2.9.1 | 0BSD | © Microsoft Corporation |
+| PDF.js (pdfjs-dist) | 6.5.438 | Apache-2.0 | © Mozilla Foundation |
+| PDF.js data files in `vendor/pdfjs/` | 6.5.438 | See each folder's LICENSE files | Adobe Systems Inc. (CMaps, BSD-3-Clause); The PDFium Authors (Foxit fonts and JBIG2, BSD-style); Red Hat, Inc. (Liberation Sans, GPL-2.0 with font exception); OpenJPEG authors (BSD-2-Clause); Mozilla Corporation and Marti Maria (qcms, MIT); ICC profile (CC0-1.0) |
+| qpdf | 12.2.0 | Apache-2.0 | © Jay Berkenbilt and qpdf contributors |
+| @neslinesli93/qpdf-wasm | 0.3.1 | ISC | © 2026 Tommaso Pifferi |
+| fflate | 0.8.3 | MIT | © 2026 Arjun Barrett |
 | Inter (font) | 5.3.0 (@fontsource-variable/inter) | OFL-1.1 | © 2016 The Inter Project Authors |
 | Plus Jakarta Sans (font; also outlined in the Privora wordmark) | 5.3.0 (@fontsource-variable/plus-jakarta-sans) | OFL-1.1 | © 2020 The Plus Jakarta Sans Project Authors |
 | JetBrains Mono (font) | 5.3.0 (@fontsource-variable/jetbrains-mono) | OFL-1.1 | © 2020 The JetBrains Mono Project Authors |
@@ -44,7 +54,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### ISC License (Lucide)
+### ISC License (Lucide, @neslinesli93/qpdf-wasm)
 
 ```
 Permission to use, copy, modify, and/or distribute this software for any
@@ -64,6 +74,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The fonts are distributed unmodified as WOFF2 files under the SIL Open Font License, Version 1.1. Full text: https://openfontlicense.org/open-font-license-official-text/. The fonts may be bundled with software but may not be sold on their own. The Privora logo artwork uses outlines of Plus Jakarta Sans glyphs. That is artwork made with the font, not a redistribution of the font software.
 
-### Apache License 2.0 (class-variance-authority)
+### Apache License 2.0 (class-variance-authority, PDF.js, qpdf)
 
-Full text: https://www.apache.org/licenses/LICENSE-2.0. No NOTICE file is shipped by this package.
+Full text: https://www.apache.org/licenses/LICENSE-2.0. None of these packages ships a NOTICE file. The PDF.js and qpdf code is used unmodified.
+
+### Other licences
+
+- **Zlib** (pako): the code is provided as-is, the origin must not be misrepresented, and altered versions must be marked. pako is used unmodified.
+- **0BSD** (tslib): no conditions.
+- **BSD-2-Clause, BSD-3-Clause, CC0-1.0, GPL-2.0 with font exception** (PDF.js data files): each licence text ships next to the files it covers, in `vendor/pdfjs/cmaps/`, `standard_fonts/`, `iccs/` and `wasm/`. The Liberation Sans fonts are unmodified. Their source is available at https://github.com/liberationfonts/liberation-fonts.

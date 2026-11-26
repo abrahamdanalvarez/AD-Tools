@@ -29,7 +29,32 @@ export type IconKey =
   | "merge"
   | "split"
   | "minimize"
-  | "eraser";
+  | "eraser"
+  | "rotate"
+  | "list-ordered"
+  | "trash"
+  | "file-output"
+  | "file-image"
+  | "image-plus"
+  | "copy"
+  | "arrow-down-up"
+  | "stamp"
+  | "hash"
+  | "text-cursor"
+  | "signature"
+  | "layers"
+  | "tags"
+  | "file-x"
+  | "scan-text"
+  | "images"
+  | "file-digit"
+  | "eye"
+  | "info"
+  | "lock"
+  | "lock-open"
+  | "wrench"
+  | "highlighter"
+  | "file-search";
 
 /**
  * planned: not started · in-progress: being built · verified: finished,

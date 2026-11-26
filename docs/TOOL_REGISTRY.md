@@ -7,12 +7,13 @@
 | File | Purpose |
 |---|---|
 | `src/registry/types.ts` | `ToolDefinition`, `ToolCategory`, `IconKey`, `ToolStatus` and related types |
-| `src/registry/tools.ts` | The tool entries |
+| `src/registry/tools.ts` | The tool entries (spreads in `pdfTools()`) |
+| `src/registry/pdf-tools.ts` | The 31 PDF tool entries, built with a small `tool()` helper that adds the shared privacy FAQ, notes and formats |
 | `src/registry/categories.ts` | The 10 categories (name, description, icon) |
 | `src/registry/registry.ts` | Queries: `visibleTools`, `toolBySlug`, `toolsInCategory`, `visibleCategories`, `popularTools`, `relatedTools`, `categoryById` |
 | `src/registry/search.ts` | Local search (`searchTools`) |
 | `src/components/icons.ts` | Maps `IconKey` strings to Lucide components |
-| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components |
+| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components. Every ID in `src/tools/pdf/ids.ts` maps to the one lazy `PdfToolPage`. |
 
 Registry data is plain (icons are string keys, not components), so the Node build script `scripts/static-routes.ts` can import it.
 
@@ -82,12 +83,44 @@ To switch off a verified tool (for example after a browser regression), set `ena
 6. Run the e2e test in Chromium, Firefox and WebKit (add the spec to their `testMatch` in `playwright.config.ts`).
 7. Only then set `status: "verified"` and `enabled: true`. The route, sitemap entry, homepage card and search result appear automatically on the next build.
 
+**A new PDF tool** needs no new component: add a config to `src/tools/pdf/ui/configs.tsx` (settings, validation and the `PdfOp` to run), its ID to `src/tools/pdf/ids.ts`, an operation to `src/tools/pdf/ops.ts` if none fits, and an entry in `pdf-tools.ts`. A unit test checks that configs, IDs and registry entries match.
+
 ## Current tools
 
 | ID | Category | Status | Engine |
 |---|---|---|---|
 | `image-converter` | image | **verified** | Canvas API (OffscreenCanvas in a worker, canvas fallback) |
-| `merge-pdf` | pdf | planned | pdf-lib |
-| `split-pdf` | pdf | planned | pdf-lib |
-| `compress-pdf` | pdf | planned | pdf-lib + pdfjs-dist |
+| `merge-pdf` | pdf | **verified** | pdf-lib |
+| `split-pdf` | pdf | **verified** | pdf-lib |
+| `rotate-pdf` | pdf | **verified** | pdf-lib |
+| `reorder-pdf-pages` | pdf | **verified** | pdf-lib |
+| `delete-pdf-pages` | pdf | **verified** | pdf-lib |
+| `extract-pdf-pages` | pdf | **verified** | pdf-lib |
+| `duplicate-pdf-pages` | pdf | **verified** | pdf-lib |
+| `reverse-pdf-pages` | pdf | **verified** | pdf-lib |
+| `pdf-to-jpg` | pdf | **verified** | pdf.js (canvas render) |
+| `pdf-to-png` | pdf | **verified** | pdf.js (canvas render) |
+| `jpg-to-pdf` | pdf | **verified** | pdf-lib (JPG/PNG embedded as-is; other formats via canvas) |
+| `png-to-pdf` | pdf | **verified** | pdf-lib (JPG/PNG embedded as-is; other formats via canvas) |
+| `image-to-pdf` | pdf | **verified** | pdf-lib (JPG/PNG embedded as-is; other formats via canvas) |
+| `compress-pdf` | pdf | **verified** | pdf-lib + canvas JPEG re-encode |
+| `add-watermark-to-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `add-page-numbers-to-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `add-text-to-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `add-image-to-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `sign-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `flatten-pdf` | pdf | **verified** | pdf-lib (pdf.js for the placement preview) |
+| `pdf-metadata-editor` | pdf | **verified** | pdf-lib |
+| `remove-pdf-metadata` | pdf | **verified** | pdf-lib |
+| `extract-pdf-text` | pdf | **verified** | pdf.js text layer |
+| `extract-pdf-images` | pdf | **verified** | pdf-lib (raw JPEG/JPEG 2000 streams, PNG for 8-bit Flate images) |
+| `pdf-page-counter` | pdf | **verified** | pdf-lib |
+| `pdf-info` | pdf | **verified** | pdf-lib |
+| `pdf-metadata-viewer` | pdf | **verified** | pdf-lib |
+| `pdf-preview` | pdf | **verified** | pdf.js |
+| `protect-pdf` | pdf | **verified** | qpdf WASM (AES-256) |
+| `unlock-pdf` | pdf | **verified** | qpdf WASM (AES-256) |
+| `repair-pdf` | pdf | **verified** | pdf-lib lenient parse and re-save |
+| `ocr-pdf` | pdf | planned | tesseract.js (D39) |
+| `annotate-pdf` | pdf | planned | to be decided (D39) |
 | `remove-background` | ai | planned | ONNX Runtime Web |

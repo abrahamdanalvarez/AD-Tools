@@ -14,7 +14,8 @@ describe("static routes", () => {
     expect(paths).toContain("/");
     expect(paths).toContain("/image-converter/");
     expect(paths).toContain("/credits/");
-    expect(paths).not.toContain("/merge-pdf/");
+    expect(paths).toContain("/merge-pdf/");
+    expect(paths).not.toContain("/ocr-pdf/");
   });
 
   it("writes per-page title, description, canonical and OG tags", () => {

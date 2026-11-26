@@ -22,7 +22,7 @@ test("missing trailing slash redirects like Apache", async ({ request }) => {
 });
 
 test("unknown and planned pages return a real 404 page", async ({ page }) => {
-  for (const path of ["/does-not-exist/", "/merge-pdf/"]) {
+  for (const path of ["/does-not-exist/", "/ocr-pdf/"]) {
     const res = await page.goto(path);
     expect(res?.status(), path).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Page not found");
@@ -32,7 +32,7 @@ test("unknown and planned pages return a real 404 page", async ({ page }) => {
 test("sitemap and robots list only real pages", async ({ request }) => {
   const xml = await (await request.get("/sitemap.xml")).text();
   expect(xml).toContain("https://tools.abrahamdan.com/image-converter/");
-  expect(xml).not.toContain("merge-pdf");
+  expect(xml).not.toContain("ocr-pdf");
   expect(await (await request.get("/robots.txt")).text()).toContain("Sitemap: https://tools.abrahamdan.com/sitemap.xml");
 });
 

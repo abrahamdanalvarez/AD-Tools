@@ -16,7 +16,7 @@ describe("resolveRoute", () => {
   });
 
   it("does not route planned tools", () => {
-    expect(resolveRoute("/merge-pdf/").kind).toBe("not-found");
+    expect(resolveRoute("/ocr-pdf/").kind).toBe("not-found");
   });
 
   it("resolves static pages and unknown paths", () => {

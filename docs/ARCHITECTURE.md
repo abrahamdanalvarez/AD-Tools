@@ -1,8 +1,8 @@
 # Architecture
 
-> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31).
+> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42).
 
-## Current state (Phase 03)
+## Current state (Phase 04)
 
 | Item | Location |
 |---|---|
@@ -13,6 +13,8 @@
 | Site config | `src/site.ts`: site URL, home SEO text, static pages, footer links (`href: null` hides a link) |
 | Tool layout | `src/components/tool/` (breadcrumbs, file picker, privacy notice, settings, progress, result, instructions, formats, limitations, FAQs, related tools) |
 | Tools | `src/tools/<id>/` (UI, worker, processing code). `src/tools/index.ts` lazy-loads each one. |
+| PDF tools | `src/tools/pdf/`: `core/` (pure pdf-lib and qpdf code, unit-tested in Node), `browser/` (pdf.js rendering and text, canvas JPEG encoding, image normalising), `ops.ts` + `pdf.worker.ts` + `run.ts` (one worker for every operation), `ui/` (one config-driven `PdfToolShell`; `configs.tsx` holds the 31 tool configs). Registry entries are in `src/registry/pdf-tools.ts`. |
+| Vendor assets | `scripts/vendor-assets.ts`: copies pdf.js CMaps, standard fonts, ICC profiles and decoder WASM to `dist/vendor/pdfjs/` (served from `node_modules` in dev). QuickJS, pdf.js's scripting engine, is excluded. Also stubs the Node built-ins that qpdf-wasm's loader imports. |
 | Workers | `src/lib/worker-bridge.ts` (`runWorker`, `runCancellable`, `CancelledError`) and `src/workers/protocol.ts` (progress, result and error messages) |
 | Shared helpers | `src/lib/files.ts` (sizes, extensions, `accept`, download), `src/lib/analytics.ts` (no-op adapter) |
 | Styles and tokens | `src/index.css`: CSS variables (light `:root`, dark `.dark`) → Tailwind `@theme inline`, self-hosted fonts. See `BRANDING.md`. |
@@ -23,7 +25,7 @@
 | Dev gallery | `src/app/Styleguide.tsx` at `/#styleguide`, dev only |
 | Apache rules | `public/.htaccess` → copied to `dist/` |
 | Unit tests | `src/**/*.test.ts(x)`, `scripts/**/*.test.ts`, Vitest + jsdom |
-| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool spec. |
+| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`image-converter`, `pdf-tools`). See `TESTING.md`. |
 | Build | `npm run build` = `tsc --noEmit && vite build` → `dist/` (root-absolute `/` asset paths, D25) |
 
 ## Routing and static pages
@@ -37,7 +39,8 @@ dist/
   credits/index.html
   404.html                    served by Apache's ErrorDocument
   sitemap.xml  robots.txt
-  assets/                     hashed JS, CSS, fonts, worker chunks
+  assets/                     hashed JS, CSS, fonts, worker chunks, qpdf WASM
+  vendor/pdfjs/               pdf.js data files (cmaps, standard_fonts, iccs, wasm)
 ```
 
 `scripts/static-routes.ts` runs after the build. It copies the built `index.html` once per route and swaps in that page's title, description, canonical URL and Open Graph tags (escaped). `404.html` is `noindex` with no canonical. The sitemap lists the home page, visible tools and static pages only. Every page loads the same bundle, and the client picks the view from `location.pathname`.
@@ -54,6 +57,15 @@ Apache behaviour (mirrored by `scripts/serve-dist.mjs` in e2e):
 2. Heavy work runs in a module Web Worker via `runWorker`. Cancel terminates the worker. Progress comes back as `{type: "progress"}` messages.
 3. When a browser lacks what the worker needs (for example `OffscreenCanvas` in some WebKit builds), the tool runs the same code on the page via `runCancellable`. Cancel drops the late result (D30).
 4. Output is a `Blob`. It is downloaded through a temporary object URL, revoked afterwards. Preview URLs are revoked on reset or unmount.
+
+### PDF tools
+
+- **Engines.** pdf-lib edits structure (pages, text, images, metadata, forms). pdf.js (legacy build) renders pages and reads text. qpdf (WASM) encrypts and decrypts with AES-256. Each runs only in the browser.
+- **Worker.** `runPdf` starts a fresh module worker (`pdf.worker.ts`) per job and transfers the input buffers to it, so no copy stays on the page. Cancel terminates the worker. Compress needs `OffscreenCanvas` to re-encode JPEGs; without it, that one operation runs on the page.
+- **Rendering.** pdf.js parses in its own worker. Pages render on demand (IntersectionObserver queue) and canvases are capped at 16 megapixels. Documents are destroyed on reset.
+- **pdf.js hardening.** All data files come from `/vendor/pdfjs/` on our origin. No scripting, annotation or form layers, XFA off, no streaming or range requests. Password prompts are refused (the file is reported as encrypted).
+- **Limits.** Files over 1 GB are refused before reading. Inputs must start with `%PDF-`. Malformed files map to clear messages (`core/errors.ts`).
+- **Fidelity.** No tool rasterises pages unless it says so (PDF to JPG/PNG). Compress only re-encodes large JPEG photos and keeps the original when the result is not smaller.
 
 ## Constraints
 

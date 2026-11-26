@@ -1,6 +1,6 @@
 # Tool inventory
 
-_Phase 01, 2026-11-26._
+_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26._
 
 Status key:
 - **Verified:** shipped in Privora, tested, browser-only.
@@ -10,11 +10,30 @@ Status key:
 
 ## Privora (this repository)
 
-| Tool | Status |
-|---|---|
-| None | No tools are implemented. The registry is empty, and only `verified` tools are shown. |
+Only `verified` tools are shown. Each one passed unit tests and Playwright e2e tests in Chromium, Firefox and WebKit (see `TESTING.md`).
+
+| Group | Tool | Status | Notes |
+|---|---|---|---|
+| Image | Image Converter | Verified | Phase 03 |
+| PDF: organise | Merge, Split, Rotate, Reorder pages, Delete pages, Extract pages, Duplicate pages, Reverse page order | Verified | Text, links and page content are copied unchanged. Bookmarks and form fields are not carried into split or extracted files. |
+| PDF: convert | PDF to JPG, PDF to PNG | Verified | Rasterises by design (chosen DPI, canvas capped at 16 MP). Multiple pages download as a ZIP. |
+| PDF: convert | JPG to PDF, PNG to PDF, Image to PDF | Verified | JPG and PNG are embedded without re-encoding. WebP, GIF, BMP and AVIF are converted on a canvas first. EXIF orientation is honoured. |
+| PDF: optimise | Compress PDF | Verified | Re-encodes large JPEG photos only (D38). Text stays selectable. Files without such photos barely shrink, and the tool says so. |
+| PDF: edit | Watermark, Page numbers, Add text, Add image, Visual signature, Flatten | Verified | Standard 14 fonts only, so text is limited to Latin (WinAnsi) characters. The signature is an image, not a digital signature (D40). |
+| PDF: metadata | Metadata editor, Metadata remover | Verified | The remover clears the Info dictionary and XMP streams. It cannot clean metadata embedded inside images. |
+| PDF: extract | Extract text, Extract images | Verified | Text comes from the text layer, so scanned pages yield nothing (OCR is deferred). Images: JPEG and JPEG 2000 byte for byte, 8-bit Flate images as PNG. Others are counted as skipped. |
+| PDF: inspect | Page counter, Preview, Information viewer, Metadata viewer | Verified | Read-only. Encrypted files report that they are encrypted. |
+| PDF: security | Password protect, Unlock | Verified | qpdf, AES-256. Unlock needs the correct password (D37). |
+| PDF: repair | Repair PDF | Verified | Rebuilds the cross-reference table and object structure. It cannot recover content that is truly missing. |
+| PDF | OCR PDF | Planned, hidden | Needs self-hosted Tesseract data and a no-cache setup (D39) |
+| PDF | PDF Annotation | Planned, hidden | Editor too large for this phase (D39) |
+| AI | Remove Background | Planned, hidden | Phase 06 |
 
 ## Upstream tools reviewed
+
+### BentoPDF (AGPL-3.0, reference only)
+
+A client-side PDF toolkit, reviewed in Phase 04 for its feature set and library choices (pdf-lib, pdf.js, qpdf WASM). Its licence would require Privora to be AGPL, so none of its code is used (D32).
 
 "Functional" here means code-reviewed only. None of these were run, because no upstream code was adopted. They become Privora tools only by being implemented and tested here.
 
@@ -45,8 +64,8 @@ The server-backed privatools tools (all 109 PDF tools plus the rest) are **exclu
 
 | Phase | Tools | Libraries (licence) |
 |---|---|---|
-| 04 PDF | merge, split, rotate, delete/reorder/extract pages, images→PDF, PDF→images, watermark, page numbers, metadata strip, compress (image recompression), protect/unlock | pdf-lib (MIT), pdfjs-dist (Apache-2.0). Encryption library to be picked and verified. |
-| 04 PDF | OCR | tesseract.js (Apache-2.0), self-hosted language data |
+| 04 PDF | Done: 31 tools verified (see above) | pdf-lib (MIT), pdfjs-dist (Apache-2.0), qpdf WASM (Apache-2.0 / ISC), fflate (MIT) |
+| Later | PDF OCR, PDF annotation (deferred from Phase 04) | tesseract.js (Apache-2.0), self-hosted language data |
 | 05 Image | convert, compress, resize, crop, rotate/flip, strip EXIF, watermark | Canvas / OffscreenCanvas, browser codecs |
 | 06 AI | background removal | onnxruntime-web (MIT) plus a model with **permissive, verified weights** (not AGPL/non-commercial) |
 | 07 Dev/text | see the privatools list above | Native APIs, small MIT libraries |

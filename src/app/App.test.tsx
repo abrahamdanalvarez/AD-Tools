@@ -30,16 +30,16 @@ describe("homepage", () => {
     render(<App pathname="/" />);
     const section = screen.getByRole("region", { name: "Tool categories" });
     for (const c of visibleCategories()) expect(within(section).getAllByText(c.name).length).toBeGreaterThan(0);
-    expect(within(section).queryByText("PDF Tools")).not.toBeInTheDocument();
+    expect(within(section).queryByText("AI Tools")).not.toBeInTheDocument();
     expect(within(section).queryByText("Coming soon")).not.toBeInTheDocument();
   });
 
   it("searches locally and links to results", async () => {
     render(<App pathname="/" />);
-    await userEvent.type(screen.getByPlaceholderText("Find a tool..."), "png to jpg");
+    await userEvent.type(screen.getByPlaceholderText("Find a tool..."), "picture converter");
     expect(screen.getByText("1 tool found")).toBeInTheDocument();
     await userEvent.clear(screen.getByPlaceholderText("Find a tool..."));
-    await userEvent.type(screen.getByPlaceholderText("Find a tool..."), "merge pdf");
+    await userEvent.type(screen.getByPlaceholderText("Find a tool..."), "ocr");
     expect(screen.getByText(/No tools match/)).toBeInTheDocument();
   });
 
@@ -67,7 +67,7 @@ describe("tool page", () => {
   });
 
   it("shows not found for planned tools and unknown pages", () => {
-    render(<App pathname="/merge-pdf/" />);
+    render(<App pathname="/ocr-pdf/" />);
     expect(screen.getByRole("heading", { level: 1, name: "Page not found" })).toBeInTheDocument();
   });
 });

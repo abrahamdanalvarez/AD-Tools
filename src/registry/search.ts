@@ -31,6 +31,8 @@ function index(tool: ToolDefinition): Indexed {
 
 function scoreTerm(entry: Indexed, term: string): number {
   if (entry.name === term) return 100;
+  // A name that starts with the term ranks above one that merely contains it as a word.
+  if (entry.name.startsWith(term)) return 60;
   if (entry.name.split(" ").some((w) => w.startsWith(term))) return 40;
   if (entry.formats.includes(term)) return 30;
   if (entry.keywords.some((k) => k === term)) return 30;

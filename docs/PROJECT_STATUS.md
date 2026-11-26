@@ -4,7 +4,7 @@ _Last updated: 2026-11-26_
 
 ## Current phase
 
-**Phase 03: Application foundation and tool registry.** Complete. Stopped for review. Phase 04 has not started.
+**Phase 04: Browser-based PDF tools.** Complete. Stopped for review. Phase 05 has not started.
 
 ## Completed tasks
 
@@ -39,6 +39,21 @@ _Last updated: 2026-11-26_
 - [x] First verified tool: Image Converter
 - [x] `docs/TOOL_REGISTRY.md` (new). Updated `ARCHITECTURE.md`, `DECISIONS.md` (D25–D31, D12 superseded).
 
+### Phase 04
+- [x] Libraries evaluated: pdf-lib (MIT), pdf.js (Apache-2.0, legacy build), qpdf WASM (Apache-2.0 / ISC), fflate (MIT). BentoPDF (AGPL-3.0) used as a reference only. tesseract.js deferred (D32–D33, D39).
+- [x] 31 PDF tools verified and enabled:
+  - Priority 1: Merge, Split, Compress, Rotate, Reorder, Delete and Extract pages, PDF to JPG/PNG, JPG/PNG/Image to PDF.
+  - Priority 2: Duplicate pages, Reverse order, Watermark, Page numbers, Add text, Add image, Visual signature, Flatten, Metadata editor and remover.
+  - Priority 3: Extract text, Extract images, Page counter, Preview, Information viewer, Metadata viewer, Password protect, Unlock, Repair.
+- [x] Left disabled (`planned`, hidden): OCR PDF and PDF Annotation (D39).
+- [x] One shared PDF shell (`src/tools/pdf/ui/`): choose or drop files, validation, settings, progress, cancel, preview, download (ZIP for several files), start over, errors, privacy notice, instructions (D35).
+- [x] One worker for every PDF operation. Inputs are transferred, not copied. Cancel terminates the worker. 1 GB input cap, 16 MP canvas cap.
+- [x] pdf.js hardened: self-hosted data files at `/vendor/pdfjs/`, no scripting (QuickJS not shipped), no annotation/form layers, no XFA, no streaming or range requests (D34).
+- [x] Fidelity: text, links and structure are kept. Only PDF to JPG/PNG rasterises. Compress re-encodes JPEG photos only and says so (D38).
+- [x] Visual signature is clearly labelled as not a cryptographic signature (D40).
+- [x] Shared contrast and mobile-overflow fixes (D42).
+- [x] Docs: `TESTING.md` (new), `TOOL_INVENTORY.md`, `TOOL_REGISTRY.md`, `ARCHITECTURE.md`, `DECISIONS.md` (D32–D42), `LICENCES.md`, `SECURITY_AUDIT.md`, `ROADMAP.md`, `THIRD_PARTY_NOTICES.md`, credits page.
+
 ## Pending tasks
 
 - [ ] **Owner:** choose the project licence (MIT recommended)
@@ -46,7 +61,9 @@ _Last updated: 2026-11-26_
 - [ ] **Owner:** repo and folder rename to `privora`
 - [ ] **Owner:** review and approve the logo (`public/brand/`)
 - [ ] **Owner:** contact email, GitHub visibility and legal pages (About, Privacy Policy, Terms, Cookies). Their footer links are hidden until then (D29).
-- [ ] Add `npm audit` and security lint gates before Phase 04
+- [ ] Add automated `npm audit` and security lint gates (checked by hand in Phase 04, see `SECURITY_AUDIT.md`)
+- [ ] **Owner:** confirm you're comfortable shipping pdf.js's Liberation Sans fonts (GPL-2.0 with font exception, unmodified, see `LICENCES.md`)
+- [ ] Later: OCR PDF (self-hosted Tesseract data, no caching of output) and PDF Annotation
 - [ ] Favourites (tool IDs only, as allowed by `PRIVACY.md`) were not part of the Phase 03 spec. Not built yet.
 
 ## Verified tools
@@ -54,10 +71,16 @@ _Last updated: 2026-11-26_
 | Tool | Route | Verified in |
 |---|---|---|
 | Image Converter (PNG, JPG, WebP, GIF, BMP, AVIF in; PNG, JPG, WebP out) | `/image-converter/` | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
+| 31 PDF tools (full list in `TOOL_REGISTRY.md`) | `/merge-pdf/`, `/split-pdf/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
 
-Planned and hidden: Merge PDF, Split PDF, Compress PDF, Remove Background.
+Planned and hidden: OCR PDF, PDF Annotation, Remove Background.
 
 ## Known issues
+
+- pdf-lib is unmaintained (last release 2021). It works and is tested, but watch for advisories (`SECURITY_AUDIT.md`).
+- pdf-lib is bundled twice (about 420 kB each, lazy): once in the PDF worker and once on the page for previews, inspection and the compress fallback.
+- Text tools (watermark, page numbers, add text) use the standard PDF fonts, so they accept Latin (WinAnsi) characters only. Other scripts get a clear error.
+- Compress only helps PDFs with large JPEG photos. Text-only or vector PDFs barely shrink, and the tool says so.
 
 - Node 24.12 locally. jsdom is pinned to 29.1.1 (D15). Upgrade Node to ≥ 24.15 when convenient.
 - Several brand colours fail WCAG AA as text (accent 2.43, success 3.30, warning 2.15 on white; muted 4.24 and primary 3.90 on the dark background; border 1.23 for inputs). Handled with extra accessible tokens (D18). The brand hex values themselves are unchanged.
@@ -66,13 +89,13 @@ Planned and hidden: Merge PDF, Split PDF, Compress PDF, Remove Background.
 
 ## Blockers
 
-- None for Phase 04.
+- None for Phase 05.
 - Before Phase 06: a permissively licensed background-removal model.
 - Before Phase 08: the ffmpeg GPL decision, plus `mod_headers` and Cloudflare passing COOP/COEP through.
 
 ## Architectural decisions
 
-See `DECISIONS.md` D1–D31. New this phase: D25 `base: "/"` (supersedes D12), D26 static route files, D27 plain registry data, D28 one real tool, D29 hidden footer links, D30 on-page fallback for workers, D31 cross-browser tool e2e.
+See `DECISIONS.md` D1–D42. New this phase: D32 PDF libraries, D33 pdf.js legacy build, D34 self-hosted pdf.js assets and no scripting, D35 one config-driven PDF shell, D36 repair via pdf-lib, D37 unlock needs the real password, D38 photo-only compression, D39 OCR and annotation deferred, D40 visual vs digital signature, D41 qpdf Node stubs, D42 shared a11y fixes.
 
 ## Test results (2026-11-26, Node v24.12.0, npm 11.6.2)
 
@@ -80,24 +103,26 @@ See `DECISIONS.md` D1–D31. New this phase: D25 `base: "/"` (supersedes D12), D
 |---|---|
 | `npm audit` | 0 vulnerabilities |
 | `npm run typecheck` | OK, no errors |
-| `npm test` | 7 files, **39/39 passed** (registry integrity, search, route resolver, static route generation, worker bridge, homepage and tool page rendering, theme storage) |
-| `npm run build` | OK, no warnings. "static routes: 3 pages, sitemap.xml, robots.txt, 404.html". Main JS 304.51 kB (95.68 kB gzip), CSS 37.17 kB (11.38 kB gzip), Image Converter chunk 90.61 kB (31.42 kB gzip, lazy), worker 1.03 kB |
-| `npx playwright test` | **42/42 passed**: 34 Chromium, 4 Firefox, 4 WebKit |
+| `npm test` | 9 files, **68/68 passed** (Phase 03's 39, plus 26 PDF core tests, 2 qpdf tests and a registry check that PDF configs, IDs and entries match) |
+| `npm run build` | OK, no warnings. "static routes: 34 pages, sitemap.xml, robots.txt, 404.html". "vendor assets: pdf.js cmaps, standard_fonts, iccs, wasm → /vendor/pdfjs/". Main JS 336.49 kB (104.77 kB gzip), CSS 41.63 kB (12.18 kB gzip). Lazy: PdfToolPage 57.47 kB (18.82 kB gzip), pdf.js 500.13 kB (152.68 kB gzip), pdf-lib 420.39 kB (175.82 kB gzip), pdf.js worker 1.33 MB, qpdf WASM 1.33 MB. `dist/` 5.3 MB in total, of which `vendor/pdfjs/` is 3.2 MB. |
+| `npx playwright test` | **109/109 passed** in 1.5 min: 59 Chromium, 25 Firefox, 25 WebKit |
 
-E2E covers:
+E2E added this phase (details in `TESTING.md`):
 
-- **Routing:** direct visits and refreshes, the trailing-slash 301, 404 for unknown and hidden tools, per-page metadata, sitemap.
-- **Image Converter (all 3 browsers):** a real PNG to JPG conversion with a JPEG signature check on the download. No non-GET or foreign requests, and storage stays empty. WebP is offered only when the browser can encode it. A `.txt` file is rejected, and a damaged image shows an error.
-- **Design checks:** home, tool, credits and 404 pages × desktop/mobile × light/dark, with 0 axe WCAG 2.2 AA violations and no horizontal scroll. Also the theme toggle, skip link and mobile menu.
+- **`pdf-tools.spec.ts` (21 tests × 3 browsers).** Every enabled PDF tool runs on synthetic files, and the download is checked: page order, text read back with pdf.js, rotation, image signatures, ZIP contents, metadata, encryption. Also wrong-password, non-PDF, damaged, scanned-PDF, cancel and start-over cases.
+- **Privacy guard on every PDF test.** No non-GET requests, nothing to other origins, no same-origin 4xx/5xx, and local storage, session storage and IndexedDB are all empty at the end.
+- **`pdf-a11y.spec.ts`.** axe WCAG 2.2 AA with 0 violations and no horizontal scroll, for the page picker, reorder screen, placement editor, signature tabs and result, at 1280 and 375 px, light and dark.
 
 Problems found and fixed during the phase:
 
-- **WebKit conversion failed.** `OffscreenCanvas` is missing there, so I added an on-page fallback (D30).
-- **The fallback then broke the worker in Chromium and Firefox.** An `instanceof HTMLCanvasElement` check threw in the worker. It's now a feature check.
-- **One axe failure** for `aria-controls` pointing at a missing list.
+- **The qpdf WASM build can't repair files and reports encryption wrongly.** Repair moved to pdf-lib (D36). Encryption is detected with pdf-lib (D37).
+- **The pdf.js modern build needs very new JS features.** Switched to the legacy build (D33).
+- **axe contrast failures** (alert text 4.37, inactive tabs 4.34), and a **131 px horizontal overflow** on the mobile signature page (D42).
+- **Firefox named thumbnails "Page 2 Page 2".** Thumbnails inside labelled buttons are now hidden from assistive tech.
+- **The encrypted-file inspection failed** on files with object streams, and a broken catalog threw an untyped error. Both now give clear messages.
 
-Screenshots (`test-results/`) were reviewed by eye.
+Screenshots of the home, split, sign and mobile dark delete pages were reviewed by eye.
 
 ## Next development task
 
-**Phase 04: PDF tools** (see `ROADMAP.md`). Wait for owner approval to start.
+**Phase 05** (see `ROADMAP.md`). Wait for owner approval to start.

@@ -73,3 +73,12 @@ describe("visibility", () => {
     for (const t of visibleTools()) for (const r of relatedTools(t)) expect(visible.has(r.id)).toBe(true);
   });
 });
+
+describe("PDF tools", () => {
+  it("has a UI config for exactly the PDF tools listed in the tool map", async () => {
+    const { pdfConfigs } = await import("@/tools/pdf/ui/configs");
+    const { pdfToolIds } = await import("@/tools/pdf/ids");
+    expect(Object.keys(pdfConfigs).sort()).toEqual([...pdfToolIds].sort());
+    for (const id of pdfToolIds) expect(tools.some((t) => t.id === id), id).toBe(true);
+  });
+});

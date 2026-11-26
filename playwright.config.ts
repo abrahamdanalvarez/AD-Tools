@@ -9,8 +9,8 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:4173" },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /image-converter\.spec\.ts/ },
-    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /image-converter\.spec\.ts/ },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /(image-converter|pdf-tools)\.spec\.ts/ },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /(image-converter|pdf-tools)\.spec\.ts/ },
   ],
   webServer: {
     command: "node scripts/serve-dist.mjs",

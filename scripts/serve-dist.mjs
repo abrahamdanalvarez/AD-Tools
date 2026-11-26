@@ -24,6 +24,7 @@ const types = {
   ".wasm": "application/wasm",
   ".onnx": "application/octet-stream",
   ".txt": "text/plain; charset=utf-8",
+  ".pdf": "application/pdf",
 };
 
 const isDir = async (p) => (await stat(p).catch(() => null))?.isDirectory() ?? false;

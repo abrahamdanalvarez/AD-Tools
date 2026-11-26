@@ -35,7 +35,8 @@ export function Alert({ className, tone = "info", title, children, ...props }: A
       <Icon aria-hidden className="mt-0.5 size-4 shrink-0" />
       <div className="grid gap-1">
         {title && <p className="font-semibold">{title}</p>}
-        {children && <div className="text-muted-foreground">{children}</div>}
+        {/* Full-strength text: muted grey falls below 4.5:1 on the tinted backgrounds. */}
+        {children && <div className="text-foreground/85">{children}</div>}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { afterEach } from "vitest";
 afterEach(cleanup);
 
 // jsdom has no matchMedia. Default to a light system theme; tests can override.
-if (!window.matchMedia) {
+if (typeof window !== "undefined" && !window.matchMedia) {
   window.matchMedia = (query: string) =>
     ({
       matches: false,

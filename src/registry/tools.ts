@@ -1,3 +1,4 @@
+import { pdfTools } from "./pdf-tools.ts";
 import type { BrowserSupport, ToolDefinition } from "./types";
 
 // The single source of truth for every Privora tool. Homepage, navigation,
@@ -5,7 +6,7 @@ import type { BrowserSupport, ToolDefinition } from "./types";
 // See docs/TOOL_REGISTRY.md before adding or changing an entry.
 
 // Module workers (Firefox 114), OffscreenCanvas 2D (Safari 16.4), modern CSS (Chrome/Edge 111).
-const modernBrowsers: BrowserSupport = { chrome: "111", edge: "111", firefox: "114", safari: "16.4" };
+export const modernBrowsers: BrowserSupport = { chrome: "111", edge: "111", firefox: "114", safari: "16.4" };
 
 export const tools: ToolDefinition[] = [
   {
@@ -36,7 +37,7 @@ export const tools: ToolDefinition[] = [
     seoTitle: "Image Converter — Free & Private Online Tool | Privora",
     seoDescription:
       "Convert images between PNG, JPG and WebP in your browser. Free, private and fast: your images are never uploaded.",
-    related: ["remove-background", "compress-pdf"],
+    related: ["image-to-pdf", "pdf-to-jpg", "compress-pdf"],
     limitations: [
       "Animated GIF and WebP files are converted using their first frame only.",
       "Converting removes image metadata such as camera details and location.",
@@ -65,10 +66,11 @@ export const tools: ToolDefinition[] = [
     ],
   },
 
+  ...pdfTools(),
+
   // ── Planned (hidden until verified) ─────────────────────────────────────
-  planned("merge-pdf", "Merge PDF", "pdf", "merge", "Combine several PDFs into one file.", ["pdf"], ["pdf"], "pdf-lib", ["combine pdf", "join pdf"]),
-  planned("split-pdf", "Split PDF", "pdf", "split", "Split a PDF into separate files or page ranges.", ["pdf"], ["pdf", "zip"], "pdf-lib", ["extract pages", "separate pdf"]),
-  planned("compress-pdf", "Compress PDF", "pdf", "minimize", "Make PDF files smaller.", ["pdf"], ["pdf"], "pdf-lib + pdfjs-dist", ["reduce pdf size", "shrink pdf"]),
+  planned("annotate-pdf", "PDF Annotation", "pdf", "highlighter", "Highlight, underline and comment on PDF pages.", ["pdf"], ["pdf"], "pdf-lib + pdf.js", ["annotate pdf", "highlight pdf", "comment pdf"]),
+  planned("ocr-pdf", "OCR PDF", "pdf", "scan-text", "Make scanned PDFs searchable with on-device text recognition.", ["pdf"], ["pdf", "txt"], "tesseract.js", ["ocr", "scanned pdf", "searchable pdf"]),
   planned("remove-background", "Remove Background", "ai", "eraser", "Remove the background from a photo using on-device AI.", ["png", "jpg", "jpeg", "webp"], ["png"], "ONNX Runtime Web", ["background remover", "transparent background", "cut out"]),
 ];
 

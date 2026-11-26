@@ -8,7 +8,7 @@ Each phase ends with `PROJECT_STATUS.md` updated, real test results recorded, an
 | 01 | Repository audit and setup | Audit [OpenDocs-Studio](https://github.com/akash098p/OpenDocs-Studio) and alternatives for licence, security, privacy (uploads, telemetry, third-party requests), functionality, and code quality. Adopt or scaffold a base. `npm ci && npm run build` must produce `dist/`. |
 | 02 | Branding and design system | Logo set, favicon, social image, self-hosted fonts, Tailwind + shadcn/ui tokens, light/dark modes (see `BRANDING.md`). |
 | 03 | Application foundation and tool registry | App shell, routing, layout, a typed tool registry that hides unverified tools, search, categories, favourites, and the worker bridge. |
-| 04 | PDF tools | Merge, split, compress, rotate, reorder, extract, protect/unlock, convert, OCR. |
+| 04 | PDF tools | Merge, split, compress, rotate, reorder, extract, protect/unlock, convert, OCR. **Done: 31 tools. OCR and annotation deferred (D39).** |
 | 05 | Image tools | Convert, resize, compress, crop, metadata stripping. |
 | 06 | AI background removal and local AI tools | ONNX Runtime Web (WebGPU with WASM fallback), self-hosted models with verified redistribution rights. |
 | 07 | Developer, text and productivity tools | JSON/YAML, encoders, hashing, QR, text utilities, etc. |

@@ -21,6 +21,17 @@ Status: `verified` (checked against the package or repo) · `unverified` (not ch
 
 **Shipped in `dist/`:** react 19.3.1 (MIT), react-dom 19.3.1 (MIT), scheduler 0.28.0 (MIT), lucide-react 1.81.0 (ISC), clsx 2.1.1 (MIT), tailwind-merge 3.7.1 (MIT), class-variance-authority 0.7.1 (Apache-2.0), radix-ui 1.8.1 and its @radix-ui/* parts (MIT), @fontsource-variable/inter, plus-jakarta-sans, jetbrains-mono 5.3.0 (OFL-1.1), plus the Tailwind CSS 4.3.5 generated CSS (MIT).
 
+**Phase 04 additions, shipped:**
+
+| Package | Version | Licence | Notes |
+|---|---|---|---|
+| pdf-lib | 1.17.1 | MIT | Bundles @pdf-lib/standard-fonts 1.0.0 (MIT), @pdf-lib/upng 1.0.1 (MIT), pako 1.0.11 (MIT AND Zlib), tslib 2.9.1 (0BSD) |
+| pdfjs-dist | 6.5.438 | Apache-2.0 | No NOTICE file in the package. Its data files ship in `dist/vendor/pdfjs/` with their own licence files: Adobe CMaps (BSD-3-Clause), Foxit fonts (BSD-style, PDFium), Liberation Sans (GPL-2.0 with font exception, unmodified, see below), ICC profile (CC0-1.0), OpenJPEG (BSD-2-Clause), JBIG2 (PDFium BSD-style, Apache-2.0 wrapper), qcms (MIT). QuickJS is not shipped. |
+| @neslinesli93/qpdf-wasm | 0.3.1 | ISC | Wraps qpdf 12.2.0 (Apache-2.0) |
+| fflate | 0.8.3 | MIT | |
+
+**Liberation Sans.** pdf.js uses these fonts to draw text in PDFs that rely on the standard Helvetica font without embedding it. They are served unmodified as separate files, with Red Hat's licence file beside them. That is distribution under GPL-2.0 (with its font exception), so the source must stay available: it is the TTF files themselves, and upstream at https://github.com/liberationfonts/liberation-fonts. This does not affect the licence of Privora's own code.
+
 **Phase 02 dev additions:** @testing-library/user-event 14.6.13 (MIT), @axe-core/playwright 4.14.1 and axe-core (MPL-2.0, test-only, not shipped).
 
 **Dev only, not shipped:** 126 packages in total: MIT 138, Apache-2.0 29, MPL-2.0 12 (lightningcss build tooling), ISC 3, BSD-2/3-Clause 4, 0BSD 2, MIT-0 2, BlueOak-1.0.0 2, CC0-1.0 1. (Counts include nested lockfile entries.) Nothing here imposes obligations on the deployed site.
@@ -29,14 +40,11 @@ Status: `verified` (checked against the package or repo) · `unverified` (not ch
 
 | Package | Version | Licence | Notes |
 |---|---|---|---|
-| pdf-lib | 1.17.1 | MIT | Unmaintained since 2021, but stable. Consider the `@pdfme/pdf-lib` fork. |
-| pdfjs-dist | 6.5.438 | Apache-2.0 | NOTICE file to check when added |
 | tesseract.js | 7.0.0 | Apache-2.0 | Caches language data in IndexedDB by default (allowed). OCR output must not be cached. |
 | onnxruntime-web | 1.31.1 | MIT | |
 | @ffmpeg/ffmpeg / @ffmpeg/util | 0.12.15 / 0.12.2 | MIT | |
 | @ffmpeg/core | 0.12.10 | **GPL-2.0-or-later** | **Blocker for a non-GPL project.** Options: GPL the project, build an LGPL-only core, or skip ffmpeg. |
 | qrcode | 1.5.4 | MIT | |
-| fflate | 0.8.3 | MIT | |
 | @imgly/background-removal | | AGPL-3.0 | **Rejected** |
 
 ## AI models

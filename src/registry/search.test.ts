@@ -37,6 +37,8 @@ describe("searchTools", () => {
 
   it("only searches visible tools by default", () => {
     const visible = searchTools("pdf").map((t) => t.id);
-    expect(visible).not.toContain("merge-pdf");
+    expect(visible).toContain("merge-pdf");
+    expect(visible).not.toContain("ocr-pdf");
+    expect(visible).not.toContain("annotate-pdf");
   });
 });

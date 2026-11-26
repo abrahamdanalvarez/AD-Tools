@@ -4,20 +4,23 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { staticRoutes } from "./scripts/static-routes.ts";
+import { qpdfNodeStubs, vendorAssets } from "./scripts/vendor-assets.ts";
 
 export default defineConfig({
   // Root-absolute asset paths so nested pages (/image-converter/) load the same
   // bundle. The site is served from the domain root (tools.abrahamdan.com).
   base: "/",
-  plugins: [react(), tailwindcss(), staticRoutes()],
+  plugins: [qpdfNodeStubs(), react(), tailwindcss(), staticRoutes(), vendorAssets()],
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
-  worker: { format: "es" },
+  worker: { format: "es", plugins: () => [qpdfNodeStubs()] },
   build: {
     outDir: "dist",
     emptyOutDir: true,
     sourcemap: false,
+    // pdf.js (~500 kB) loads only on PDF tool pages, never on the homepage.
+    chunkSizeWarningLimit: 600,
   },
   test: {
     environment: "jsdom",
