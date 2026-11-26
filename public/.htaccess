@@ -1,9 +1,15 @@
 # Privora static hosting rules (Apache). Shipped inside dist/.
+# Every page is a real file (/tool-slug/index.html), so no rewrites are needed.
 # Security headers, CSP and COOP/COEP are added in Phase 09.
+
+ErrorDocument 404 /404.html
+DirectoryIndex index.html
+Options -Indexes
 
 <IfModule mod_mime.c>
   AddType application/wasm .wasm
   AddType text/javascript .mjs
+  AddType application/manifest+json .webmanifest
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -11,10 +17,8 @@
   <FilesMatch "^.+-[A-Za-z0-9_-]{8,}\.(js|css|woff2|wasm)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-  # Always revalidate the entry page so new deploys show up.
+  # Always revalidate pages so new deploys show up.
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
 </IfModule>
-
-Options -Indexes

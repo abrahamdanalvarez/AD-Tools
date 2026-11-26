@@ -58,7 +58,9 @@ export function CategoryCard({ icon: Icon, name, description, count, href }: Cat
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <h3 className="text-base font-semibold">{name}</h3>
         {available ? (
-          <Badge tone="primary">{count} tools</Badge>
+          <Badge tone="primary">
+            {count} {count === 1 ? "tool" : "tools"}
+          </Badge>
         ) : (
           <Badge tone="neutral">Coming soon</Badge>
         )}

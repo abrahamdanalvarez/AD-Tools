@@ -20,7 +20,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
         Skip to content
       </a>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <a href="./" aria-label="Privora home" className="rounded-md">
+        <a href="/" aria-label="Privora home" className="rounded-md">
           <Logo />
         </a>
         <nav aria-label="Main" className="hidden md:block">

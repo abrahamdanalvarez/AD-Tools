@@ -1,32 +1,14 @@
-import {
-  AudioLines,
-  BrainCircuit,
-  Clapperboard,
-  CodeXml,
-  FileText,
-  FileType,
-  Image,
-  ListChecks,
-  Type,
-  type LucideIcon,
-} from "lucide-react";
-import type { ToolCategory } from "./types";
-
-export interface CategoryInfo {
-  id: ToolCategory;
-  name: string;
-  description: string;
-  icon: LucideIcon;
-}
+import type { CategoryInfo } from "./types";
 
 export const categories: CategoryInfo[] = [
-  { id: "pdf", name: "PDF", description: "Merge, split, compress and convert PDFs.", icon: FileText },
-  { id: "image", name: "Image", description: "Resize, convert, compress and crop images.", icon: Image },
-  { id: "ai", name: "On-device AI", description: "Background removal and more, run locally.", icon: BrainCircuit },
-  { id: "audio", name: "Audio", description: "Convert and trim audio files.", icon: AudioLines },
-  { id: "video", name: "Video", description: "Convert, trim and extract from video.", icon: Clapperboard },
-  { id: "document", name: "Document", description: "Convert between document formats.", icon: FileType },
-  { id: "developer", name: "Developer", description: "Format, encode, decode and generate.", icon: CodeXml },
-  { id: "text", name: "Text", description: "Count, compare and transform text.", icon: Type },
-  { id: "productivity", name: "Productivity", description: "Everyday helpers like QR codes.", icon: ListChecks },
+  { id: "pdf", name: "PDF Tools", description: "Merge, split, compress and convert PDFs.", icon: "file-text" },
+  { id: "image", name: "Image Tools", description: "Convert, resize, compress and crop images.", icon: "image" },
+  { id: "ai", name: "AI Tools", description: "Background removal and more, run on your device.", icon: "brain" },
+  { id: "video", name: "Video Tools", description: "Convert, trim and extract from video.", icon: "video" },
+  { id: "audio", name: "Audio Tools", description: "Convert and trim audio files.", icon: "audio" },
+  { id: "document", name: "Document Tools", description: "Convert between document formats.", icon: "file-type" },
+  { id: "developer", name: "Developer Tools", description: "Format, encode, decode and generate.", icon: "code" },
+  { id: "text", name: "Text Tools", description: "Count, compare and transform text.", icon: "type" },
+  { id: "productivity", name: "Productivity Tools", description: "Everyday helpers like QR codes.", icon: "list-checks" },
+  { id: "file", name: "File Tools", description: "Zip, unzip and inspect files.", icon: "folder" },
 ];

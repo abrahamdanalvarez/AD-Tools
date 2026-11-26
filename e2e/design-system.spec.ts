@@ -6,13 +6,16 @@ const viewports = {
   mobile: { width: 375, height: 812 },
 };
 
+const pages = { home: "/", tool: "/image-converter/", credits: "/credits/", notfound: "/nope/" };
+
 for (const [device, viewport] of Object.entries(viewports)) {
   for (const scheme of ["light", "dark"] as const) {
-    test.describe(`${device} / ${scheme}`, () => {
+    for (const [name, path] of Object.entries(pages)) {
+    test.describe(`${name} ${device} / ${scheme}`, () => {
       test.use({ viewport, colorScheme: scheme });
 
       test("renders with the right theme, no horizontal scroll, no axe violations", async ({ page }, info) => {
-        await page.goto("/");
+        await page.goto(path);
         await page.evaluate(() => document.fonts.ready);
 
         const isDark = await page.evaluate(() => document.documentElement.classList.contains("dark"));
@@ -27,9 +30,10 @@ for (const [device, viewport] of Object.entries(viewports)) {
         const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
         expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
 
-        await page.screenshot({ path: info.outputPath(`home-${device}-${scheme}.png`), fullPage: true });
+        await page.screenshot({ path: info.outputPath(`${name}-${device}-${scheme}.png`), fullPage: true });
       });
     });
+    }
   }
 }
 

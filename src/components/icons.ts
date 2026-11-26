@@ -1,0 +1,37 @@
+import {
+  AudioLines,
+  BrainCircuit,
+  Clapperboard,
+  CodeXml,
+  Eraser,
+  FileText,
+  FileType,
+  FolderOpen,
+  Image,
+  ListChecks,
+  Merge,
+  Minimize2,
+  RefreshCcw,
+  Split,
+  Type,
+  type LucideIcon,
+} from "lucide-react";
+import type { IconKey } from "@/registry/types";
+
+export const icons: Record<IconKey, LucideIcon> = {
+  "file-text": FileText,
+  image: Image,
+  brain: BrainCircuit,
+  video: Clapperboard,
+  audio: AudioLines,
+  "file-type": FileType,
+  code: CodeXml,
+  type: Type,
+  "list-checks": ListChecks,
+  folder: FolderOpen,
+  "image-convert": RefreshCcw,
+  merge: Merge,
+  split: Split,
+  minimize: Minimize2,
+  eraser: Eraser,
+};
