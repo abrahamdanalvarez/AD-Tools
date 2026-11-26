@@ -1,5 +1,13 @@
 # Security audit
 
+## Phase 02 update (2026-11-26)
+
+- New runtime dependencies: `radix-ui` (MIT) and three `@fontsource-variable` fonts (OFL-1.1). `npm audit`: 0 vulnerabilities.
+- Fonts are self-hosted. The e2e test confirms 0 requests to other origins.
+- The only browser storage use is `localStorage["privora-theme"]`, written only after an explicit toggle (tested in unit and e2e).
+- No inline scripts or styles were added. The theme bootstrap is a static file (`/theme-init.js`), ready for a strict CSP in Phase 09.
+- External link: the footer links to `https://abrahamdan.com` (a plain navigation link, no prefetch).
+
 ## Phase 01 baseline (2026-11-26)
 
 ### Dependencies

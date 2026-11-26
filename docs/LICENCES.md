@@ -19,7 +19,9 @@ Status: `verified` (checked against the package or repo) · `unverified` (not ch
 
 ## Installed dependencies (verified from `package-lock.json`, 2026-11-26)
 
-**Shipped in `dist/`:** react 19.3.1 (MIT), react-dom 19.3.1 (MIT), scheduler 0.28.0 (MIT), lucide-react 1.81.0 (ISC), clsx 2.1.1 (MIT), tailwind-merge 3.7.1 (MIT), class-variance-authority 0.7.1 (Apache-2.0), plus the Tailwind CSS 4.3.5 generated CSS (MIT).
+**Shipped in `dist/`:** react 19.3.1 (MIT), react-dom 19.3.1 (MIT), scheduler 0.28.0 (MIT), lucide-react 1.81.0 (ISC), clsx 2.1.1 (MIT), tailwind-merge 3.7.1 (MIT), class-variance-authority 0.7.1 (Apache-2.0), radix-ui 1.8.1 and its @radix-ui/* parts (MIT), @fontsource-variable/inter, plus-jakarta-sans, jetbrains-mono 5.3.0 (OFL-1.1), plus the Tailwind CSS 4.3.5 generated CSS (MIT).
+
+**Phase 02 dev additions:** @testing-library/user-event 14.6.13 (MIT), @axe-core/playwright 4.14.1 and axe-core (MPL-2.0, test-only, not shipped).
 
 **Dev only, not shipped:** 126 packages in total: MIT 138, Apache-2.0 29, MPL-2.0 12 (lightningcss build tooling), ISC 3, BSD-2/3-Clause 4, 0BSD 2, MIT-0 2, BlueOak-1.0.0 2, CC0-1.0 1. (Counts include nested lockfile entries.) Nothing here imposes obligations on the deployed site.
 
@@ -49,6 +51,8 @@ Check the code licence **and** the weights' redistribution rights separately. Se
 
 | Font | Package | Licence | Status |
 |---|---|---|---|
-| Plus Jakarta Sans | @fontsource-variable/plus-jakarta-sans 5.3.0 | OFL-1.1 | verified (not installed until Phase 02) |
-| Inter | @fontsource-variable/inter 5.3.0 | OFL-1.1 | verified (not installed until Phase 02) |
-| JetBrains Mono | @fontsource-variable/jetbrains-mono 5.3.0 | OFL-1.1 | verified (not installed until Phase 02) |
+| Plus Jakarta Sans | @fontsource-variable/plus-jakarta-sans 5.3.0 | OFL-1.1 | verified, shipped (LICENSE read) |
+| Inter | @fontsource-variable/inter 5.3.0 | OFL-1.1 | verified, shipped (LICENSE read) |
+| JetBrains Mono | @fontsource-variable/jetbrains-mono 5.3.0 | OFL-1.1 | verified, shipped (LICENSE read) |
+
+The logo wordmark uses Plus Jakarta Sans Bold glyph outlines (artwork made with the font, which OFL permits). They were generated once with opentype.js (MIT) in a scratch folder. Neither opentype.js nor the static font package is a project dependency.

@@ -39,7 +39,7 @@ No server runtime, database or backend is required.
 
 - [Roadmap](docs/ROADMAP.md)
 - [Project status](docs/PROJECT_STATUS.md)
-- [Brand](docs/BRAND.md)
+- [Branding](docs/BRANDING.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Privacy](docs/PRIVACY.md)
 - [Licences](docs/LICENCES.md)

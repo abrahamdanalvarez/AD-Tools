@@ -6,7 +6,7 @@ Each phase ends with `PROJECT_STATUS.md` updated, real test results recorded, an
 |---|---|---|
 | 00 | Project initialization | Rules, docs, status tracking, decision log. |
 | 01 | Repository audit and setup | Audit [OpenDocs-Studio](https://github.com/akash098p/OpenDocs-Studio) and alternatives for licence, security, privacy (uploads, telemetry, third-party requests), functionality, and code quality. Adopt or scaffold a base. `npm ci && npm run build` must produce `dist/`. |
-| 02 | Branding and design system | Logo set, favicon, social image, self-hosted fonts, Tailwind + shadcn/ui tokens, light/dark modes (from `BRAND.md`). |
+| 02 | Branding and design system | Logo set, favicon, social image, self-hosted fonts, Tailwind + shadcn/ui tokens, light/dark modes (see `BRANDING.md`). |
 | 03 | Application foundation and tool registry | App shell, routing, layout, a typed tool registry that hides unverified tools, search, categories, favourites, and the worker bridge. |
 | 04 | PDF tools | Merge, split, compress, rotate, reorder, extract, protect/unlock, convert, OCR. |
 | 05 | Image tools | Convert, resize, compress, crop, metadata stripping. |
