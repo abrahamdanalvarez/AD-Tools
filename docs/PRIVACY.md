@@ -6,7 +6,7 @@ Privacy requirements override all feature requirements. If a tool cannot meet th
 
 ## The promise
 
-- Files you open in AD Tools are processed on your own device, in your browser.
+- Files you open in Privora are processed on your own device, in your browser.
 - Your files, their contents, and their names are never uploaded, sent, or stored by us.
 - No account, no sign-up.
 - Files you create are saved only when you choose to download them.

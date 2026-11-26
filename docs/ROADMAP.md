@@ -6,7 +6,7 @@ Each phase ends with `PROJECT_STATUS.md` updated and real test results recorded.
 |---|---|---|
 | 0 | Project setup and permanent instructions | Requirements, docs, and status tracking in place. |
 | 1 | GitHub repository audit and selection | Find open-source client-side tool suites and libraries to adopt or reuse. Verify licences and privacy behaviour. Pick the base architecture. |
-| 2 | Branding and design system | Logo, colour, type, and tokens. Tailwind + shadcn/ui theme with light/dark modes. |
+| 2 | Branding and design system | Build the Privora identity from `BRAND.md`: SVG logo set, favicon, social image, self-hosted fonts, Tailwind + shadcn/ui tokens with light/dark modes. |
 | 3 | Homepage, navigation and tool registry | App shell, routing, a typed tool registry that hides unfinished tools, search, and categories. |
 | 4 | PDF tools | Merge, split, compress, rotate, reorder, extract, protect/unlock, convert, OCR. |
 | 5 | Image tools and AI background removal | Convert, resize, compress, crop. On-device background removal (ONNX Runtime Web / WebGPU) with a verified model licence. |
