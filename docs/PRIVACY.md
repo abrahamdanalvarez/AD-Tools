@@ -2,7 +2,7 @@
 
 **Your files. Your device. Your privacy.**
 
-Privacy requirements override all feature requirements. If a tool cannot meet them, it is not shipped.
+Privacy requirements override all feature requirements. If a tool cannot meet them, it is not published.
 
 ## The promise
 
@@ -11,34 +11,49 @@ Privacy requirements override all feature requirements. If a tool cannot meet th
 - No account, no sign-up.
 - Files you create are saved only when you choose to download them.
 
-## Rules for development
+## Never transmitted or persisted
 
-### Never transmitted or persisted
+- User files and generated files
+- File names, file paths, file hashes
+- Document contents, images, audio, video
+- Extracted text, OCR results
+- Passwords, API keys
+- Clipboard contents
+- Any other sensitive user input
 
-User-selected files, generated files, document contents, images, audio, video, file names, passwords, extracted text, OCR results, and any other sensitive input.
+"Persisted" includes `localStorage`, `sessionStorage`, IndexedDB, Cache Storage, OPFS, cookies, service-worker caches, and any remote storage.
 
-### Never used for sensitive data
-
-`localStorage`, `sessionStorage`, IndexedDB, Cache Storage, cookies, OPFS, remote storage.
-
-### Allowed
+## Allowed
 
 | Item | Where |
 |---|---|
-| Temporary processing data | Memory only (JS heap, WASM memory, in-memory virtual FS) |
-| User downloads | User-initiated, to their device |
-| Public AI models, app assets, WASM | May be cached (HTTP cache, Cache Storage) |
-| Non-sensitive preferences (theme, etc.) | `localStorage` |
-| Analytics (future, optional) | Aggregate tool usage only. Never contents, names, or inputs. |
-
-### Engineering checks (enforced from Phase 7)
-
-- Network audit: Playwright tests assert no request carries user data and that no requests go to third-party origins during processing.
-- Storage audit: tests assert no user data lands in any browser storage after using a tool.
-- Library review: disable or override default caching that would persist user data. Model and language caching is fine.
-- Object URLs are revoked, and buffers are released after use.
-- A CSP restricts `connect-src` to our own origin.
+| Temporary processing data | Memory only (JS heap, WASM memory, in-memory WASM file systems such as ffmpeg MEMFS) |
+| Output files | Only when the user starts a download |
+| Public app assets, models, fonts, WASM | May be cached (HTTP cache, Cache Storage, IndexedDB for model/language data) |
+| Theme, language, favourite tool IDs | `localStorage` |
 
 ## Analytics
 
-Not implemented. If added, it must be privacy-safe (no cookies, no personal data, no file data) and documented here first.
+**Disabled by default.** It stays off until a provider is configured and approved by the owner, and it is documented here first.
+
+Allowed events (with no other properties):
+
+| Event | Payload |
+|---|---|
+| `page_view` | page path (route only, no query strings) |
+| `tool_open` | tool ID |
+| `process_start` | tool ID |
+| `process_complete` | tool ID |
+| `process_fail` | tool ID, and an error category from a fixed enum (never a raw message) |
+| `download` | tool ID |
+
+Never sent: content, file names or sizes that could identify a file, hashes, text inputs, free-form error messages, or identifiers that track a person across sessions. The provider must be cookieless and must not need a consent banner.
+
+## Engineering checks (enforced from Phase 09)
+
+- **Network audit:** Playwright tests run each tool and assert that no request goes anywhere except our own static assets and approved analytics events.
+- **Storage audit:** tests assert that no user data is left in any browser storage after use.
+- **Library review:** turn off or override any library default that would persist user data. Model and language caching is fine.
+- **Cleanup:** revoke object URLs and release buffers after use.
+- **CSP:** `connect-src` is limited to our own origin (plus the analytics endpoint, if approved).
+- **Cloudflare:** check that no feature injects scripts or beacons (Web Analytics auto-inject, Rocket Loader, Zaraz, email obfuscation), because these change the privacy and CSP picture.

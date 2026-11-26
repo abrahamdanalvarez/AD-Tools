@@ -39,6 +39,7 @@ No server runtime, database or backend is required.
 - [Architecture](docs/ARCHITECTURE.md)
 - [Privacy](docs/PRIVACY.md)
 - [Licences](docs/LICENCES.md)
+- [Decisions](docs/DECISIONS.md)
 
 ## Author
 

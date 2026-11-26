@@ -1,38 +1,50 @@
 # Licences
 
-Every dependency, adopted upstream repository, and AI model must be listed here with a **verified** licence and any required attribution before it ships.
+Every dependency, adopted upstream repository, AI model, and font must be listed here with a **verified** licence and its required attribution before it ships.
 
-Status values: `verified` (checked against the source repo or package) · `unverified` (not yet checked, must not ship).
+Status: `verified` (checked against the source) · `unverified` (not checked, must not ship).
 
 ## Project licence
 
-Not yet chosen. It must be compatible with every adopted dependency (see the GPL note below). Decide in Phase 1.
+Not yet chosen. It must be compatible with the adopted upstream and dependencies (see the GPL note). Decide in Phase 01.
+
+## Upstream candidates
+
+| Repository | Licence | Status | Notes |
+|---|---|---|---|
+| [akash098p/OpenDocs-Studio](https://github.com/akash098p/OpenDocs-Studio) | Unknown | unverified | Preferred candidate. Phase 01 audit covers licence, security, privacy, and functionality. |
 
 ## Dependencies
 
-None installed yet. No `package.json` exists.
+None installed. No `package.json` exists yet.
 
-## Candidates to verify (Phase 1)
-
-Common client-side libraries for this project. All licences are **unverified** until checked.
+## Library candidates (unverified)
 
 | Package | Purpose | Expected licence | Notes |
 |---|---|---|---|
 | pdf-lib | PDF create/edit | MIT | |
 | pdfjs-dist | PDF render/text | Apache-2.0 | |
-| tesseract.js / tesseract.js-core | OCR | Apache-2.0 | Language data is cached in IndexedDB by default. That's allowed (public data), but OCR output must not be cached. |
+| tesseract.js / -core | OCR | Apache-2.0 | Caches language data in IndexedDB by default (allowed). OCR output must not be cached. |
 | onnxruntime-web | AI inference | MIT | |
-| @ffmpeg/ffmpeg / @ffmpeg/util | Audio/video | MIT | Wrapper only |
-| @ffmpeg/core | ffmpeg WASM build | GPL-2.0+ likely (bundles GPL codecs such as x264) | **Licence risk.** It may force GPL obligations on distribution. Check the build config or use an LGPL build. |
-| qrcode | QR generation | MIT | |
+| @ffmpeg/ffmpeg, @ffmpeg/util | Audio/video wrapper | MIT | |
+| @ffmpeg/core | ffmpeg WASM build | Likely GPL-2.0+ (x264 etc.) | **Risk.** Check the build or use an LGPL build. |
+| qrcode | QR | MIT | |
 | fflate / pako | Zip/deflate | MIT / MIT+Zlib | |
 
 ## AI models
 
-None selected. Each model needs its weights licence verified separately from its code. Many background-removal models are non-commercial or AGPL. Record the source URL, licence, and attribution here.
+Check the code licence **and** the weights' redistribution rights separately. Self-hosting means redistributing. Many background-removal weights are non-commercial or AGPL.
 
-| Model | Use | Source | Weights licence | Status |
-|---|---|---|---|---|
+| Model | Use | Source | Weights licence | Redistribution OK | Status |
+|---|---|---|---|---|---|
+
+## Fonts
+
+| Font | Expected licence | Status |
+|---|---|---|
+| Plus Jakarta Sans | OFL-1.1 | unverified |
+| Inter | OFL-1.1 | unverified |
+| JetBrains Mono | OFL-1.1 | unverified |
 
 ## Attribution
 

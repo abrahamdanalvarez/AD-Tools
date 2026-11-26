@@ -4,76 +4,53 @@ _Last updated: 2026-11-26_
 
 ## Current phase
 
-**Phase 0: Project setup and permanent instructions.** Complete, including the rebrand to **Privora**. Ready for Phase 1.
+**Phase 00: Project initialization.** Complete. Stopped for review. Phase 01 has not started.
 
 ## Completed tasks
 
 - [x] Inspected workspace and git status
-- [x] Recorded permanent requirements in the project instructions file
-- [x] Rewrote `README.md`
-- [x] Created `docs/PROJECT_STATUS.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `PRIVACY.md`, `LICENCES.md`
-- [x] Defined the roadmap for phases 0–9
-- [x] Rebranded from AD Tools to Privora across all existing docs and project instructions
-- [x] Added `docs/BRAND.md` (identity, colours, typography, logo brief, homepage copy, SEO formats)
+- [x] Concise permanent rules in the project instructions file. Details moved to `docs/`.
+- [x] `README.md` (Privora)
+- [x] `docs/ARCHITECTURE.md`: constraints, hosting (Virtualmin, Apache, Cloudflare), `.htaccess` duties, planned layout
+- [x] `docs/ROADMAP.md`: phases 00–11
+- [x] `docs/PRIVACY.md`: expanded never-persist list, allowed storage, analytics event spec (off by default), audit checks
+- [x] `docs/LICENCES.md`: upstream candidate, library, model, and font tables
+- [x] `docs/DECISIONS.md`: decision log D1–D9
+- [x] `docs/BRAND.md`: identity, tokens, copy, SEO (from the rebrand)
 
 ## Pending tasks
 
-- [ ] Phase 1: audit and select open-source repositories and libraries
-- [ ] Phase 2: build the logo set, favicon, and social image from the `BRAND.md` brief
+- [ ] Phase 01: audit OpenDocs-Studio and alternatives, then adopt or scaffold a base
 - [ ] Choose a project licence
-- [ ] Rename the GitHub repo `AD-Tools` → `privora` (needs owner permission)
-- [ ] Rename the local folder `AD-Tools` → `privora` (owner action, see Known issues)
-- [ ] Clean up the broken `node_modules/`
+- [ ] Rename the GitHub repo `AD-Tools` → `privora` (owner permission)
+- [ ] Rename the local folder `AD-Tools` → `privora` (owner action)
+- [ ] Delete the broken `node_modules/` (owner confirmation)
 
-## Implemented features
+## Verified tools
 
-None. No application code yet.
-
-## Rebrand coverage
-
-| Target | Result |
-|---|---|
-| Project instructions, README, docs | Updated to Privora |
-| Brand config | New `docs/BRAND.md` |
-| package.json / package-lock.json | Don't exist yet. Name will be `privora` when scaffolded. |
-| App config, headings, nav, footer, metadata, SEO, OG, manifest, sitemap | Don't exist yet. Spec recorded in `BRAND.md` for Phases 3 and 8. |
-| Logo assets, favicons, social image | Don't exist yet. Brief in `BRAND.md`, built in Phase 2. |
-| Legal pages, analytics config | Don't exist yet (Phases 7 and 8) |
-| Test descriptions | No tests yet |
-| Production domain | Unchanged: tools.abrahamdan.com |
-
-## Architectural decisions
-
-| # | Decision | Reason |
-|---|---|---|
-| 1 | Static Vite build deployed as `dist/` contents to Virtualmin `public_html/` | Hard requirement. No server runtime. |
-| 2 | All processing client-side in Web Workers + WASM, with ONNX Runtime Web for AI | Privacy requirement |
-| 3 | Self-host WASM, models, and fonts on our own origin. No runtime third-party CDN. | Simpler CSP and privacy guarantees |
-| 4 | Tool registry with a status field. Only `stable` tools are visible. | "Never expose unfinished tools" |
-| 5 | Apache `.htaccess` for SPA fallback, WASM MIME, caching, COOP/COEP, and CSP | Only server config available on static hosting |
-| 6 | Brand name is Privora. `BRAND.md` is the single source of truth for identity. | Rebrand, 2026-11-26 |
+None. No tool has been implemented or verified.
 
 ## Known issues
 
-- `node_modules/` contains **only empty directories (0 files)** and there is no `package.json` or `package-lock.json`. It looks like a leftover from an install that broke partway. It is unusable and git-ignored. Safe to delete; left untouched pending owner confirmation.
-- The git remote is `abrahamdanalvarez/AD-Tools`; the target name is `privora`. GitHub redirects old URLs after a rename. Afterwards, update the remote with `git remote set-url origin https://github.com/abrahamdanalvarez/privora.git`.
-- The local folder is still `AD-Tools`. Renaming it is best done by the owner with the editor closed (open terminals and editor workspaces point at the old path).
+- `node_modules/` contains only empty directories (0 files). There's no `package.json` or lockfile. It is unusable and git-ignored.
+- The git remote is still `abrahamdanalvarez/AD-Tools`. After renaming it on GitHub, run `git remote set-url origin https://github.com/abrahamdanalvarez/privora.git`.
+- The local folder is still `AD-Tools`. Rename it with the editor closed.
 
 ## Blockers
 
-- None for Phase 1.
-- To confirm before Phase 6: does the Virtualmin host allow `mod_headers` (COOP/COEP) for `SharedArrayBuffer`? Without it, ffmpeg.wasm and ONNX run single-threaded only.
-- Before shipping ffmpeg tools: the licence of the `@ffmpeg/core` build (GPL risk).
+- None for Phase 01.
+- Before Phase 08: confirm the host allows `mod_headers` (COOP/COEP) and that Cloudflare passes those headers through. Without them, ffmpeg.wasm and ONNX run single-threaded.
+- Before Phase 08: the `@ffmpeg/core` licence (GPL risk).
+
+## Architectural decisions
+
+See `DECISIONS.md` (D1–D9). D9 (OpenDocs-Studio as the upstream) is still only proposed.
 
 ## Test results
 
-No tests run. No code or build exists yet, so the rebrand needed no test or build check.
-
+No tests run. No code exists yet.
 Environment: Node v24.12.0, npm 11.6.2.
 
-## Next actions
+## Next development task
 
-1. Phase 1: search GitHub for client-side tool suites (PDF, image, media) to adopt or borrow from. Record licence, activity, architecture fit, and privacy behaviour (any uploads or telemetry).
-2. Shortlist libraries per category with verified licences in `LICENCES.md`.
-3. Pick the base: an adopted upstream or a fresh Vite + React + TS scaffold (`"name": "privora"`).
-4. Choose the project licence based on the dependencies picked.
+**Phase 01: repository audit and setup.** Audit [OpenDocs-Studio](https://github.com/akash098p/OpenDocs-Studio) for licence, security (dependencies, `npm audit`), privacy (uploads, telemetry, third-party requests, storage use), how many tools are really client-side, architecture fit with the stack, and maintainability. Compare it with alternatives, then recommend adopting it, forking parts, or a fresh scaffold. Wait for owner approval before setting anything up.
