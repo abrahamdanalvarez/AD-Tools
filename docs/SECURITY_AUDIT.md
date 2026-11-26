@@ -1,5 +1,16 @@
 # Security audit
 
+## Phase 05 update (2026-11-27)
+
+- **New runtime dependencies:** exifr 7.1.3 (MIT) and @jsquash/oxipng 2.3.0 (Apache-2.0, oxipng MIT). Exact pins. `npm audit`: 0 vulnerabilities. utif was tried and removed (D48).
+- **Untrusted images.** The format comes from the file's bytes, never its name or reported type. A renamed non-image or a damaged image is refused when chosen. Size is checked (50 MP, 20,000 px per side) before any large canvas is made.
+- **SVG.** Never inserted into the page. DOMParser reads only its size, and it is drawn through `<img>` from a Blob URL, where scripts don't run and external references don't load. The e2e test uses an SVG with a script and an external image, and checks that neither runs nor loads. Base64 to Image refuses SVG (D51).
+- **Base64 input** is length-capped (28 million characters) and checked against the Base64 alphabet. Its format is read from the decoded bytes.
+- **exifr** is given an ArrayBuffer, so it never fetches. Values are rendered as text by React (no HTML).
+- **Clipboard.** Copy buttons only write, and only when clicked. Nothing reads the clipboard.
+- **No persistence or transmission.** The shared e2e guard (`e2e/fixtures.ts`) runs on every image test in Chromium, Firefox and WebKit: no non-GET requests, nothing to other origins, no same-origin errors, and empty localStorage, sessionStorage, IndexedDB and Cache Storage at the end.
+- **No eval.** `src/` still has no `eval`, `new Function`, `innerHTML` or `dangerouslySetInnerHTML`.
+
 ## Phase 04 update (2026-11-26)
 
 PDF tools parse untrusted files, so this phase adds the most attack surface so far.

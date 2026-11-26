@@ -34,7 +34,7 @@ export function SupportedFormats({ tool }: { tool: ToolDefinition }) {
       <dt className="font-medium">Accepts</dt>
       <dd className="text-muted-foreground">{list(tool.inputFormats)}</dd>
       <dt className="font-medium">Creates</dt>
-      <dd className="text-muted-foreground">{list(tool.outputFormats)}</dd>
+      <dd className="text-muted-foreground">{tool.outputFormats.length ? list(tool.outputFormats) : "Nothing to download: results show on the page"}</dd>
       <dt className="font-medium">Recommended size</dt>
       <dd className="text-muted-foreground">Up to {tool.maxFileSizeMB} MB</dd>
       {tool.model && (
@@ -76,10 +76,12 @@ interface ResultPanelProps {
   preview?: ReactNode;
   onDownload: () => void;
   onReset: () => void;
+  /** Back to the settings, keeping the chosen files. */
+  onEdit?: () => void;
   downloadLabel?: string;
 }
 
-export function ResultPanel({ title, details, preview, onDownload, onReset, downloadLabel = "Download" }: ResultPanelProps) {
+export function ResultPanel({ title, details, preview, onDownload, onReset, onEdit, downloadLabel = "Download" }: ResultPanelProps) {
   return (
     <section aria-label="Result" className="grid gap-4 rounded-xl border border-border bg-surface p-5">
       <div>
@@ -96,6 +98,11 @@ export function ResultPanel({ title, details, preview, onDownload, onReset, down
           <RotateCcw aria-hidden />
           Start over
         </Button>
+        {onEdit && (
+          <Button variant="ghost" onClick={onEdit}>
+            Change settings
+          </Button>
+        )}
       </div>
     </section>
   );

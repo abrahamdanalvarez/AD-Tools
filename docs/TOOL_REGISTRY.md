@@ -7,13 +7,14 @@
 | File | Purpose |
 |---|---|
 | `src/registry/types.ts` | `ToolDefinition`, `ToolCategory`, `IconKey`, `ToolStatus` and related types |
-| `src/registry/tools.ts` | The tool entries (spreads in `pdfTools()`) |
+| `src/registry/tools.ts` | The tool entries (spreads in `imageTools()` and `pdfTools()`), plus planned, hidden entries |
+| `src/registry/image-tools.ts` | The 33 image tool entries, built with a `tool()` helper (shared privacy FAQ, notes and formats) and `pair()` for the six format-pair converters |
 | `src/registry/pdf-tools.ts` | The 31 PDF tool entries, built with a small `tool()` helper that adds the shared privacy FAQ, notes and formats |
 | `src/registry/categories.ts` | The 10 categories (name, description, icon) |
 | `src/registry/registry.ts` | Queries: `visibleTools`, `toolBySlug`, `toolsInCategory`, `visibleCategories`, `popularTools`, `relatedTools`, `categoryById` |
 | `src/registry/search.ts` | Local search (`searchTools`) |
 | `src/components/icons.ts` | Maps `IconKey` strings to Lucide components |
-| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components. Every ID in `src/tools/pdf/ids.ts` maps to the one lazy `PdfToolPage`. |
+| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components. Every ID in `src/tools/pdf/ids.ts` maps to the one lazy `PdfToolPage`, and every ID in `src/tools/image/ids.ts` to `ImageToolPage`. |
 
 Registry data is plain (icons are string keys, not components), so the Node build script `scripts/static-routes.ts` can import it.
 
@@ -85,11 +86,25 @@ To switch off a verified tool (for example after a browser regression), set `ena
 
 **A new PDF tool** needs no new component: add a config to `src/tools/pdf/ui/configs.tsx` (settings, validation and the `PdfOp` to run), its ID to `src/tools/pdf/ids.ts`, an operation to `src/tools/pdf/ops.ts` if none fits, and an entry in `pdf-tools.ts`. A unit test checks that configs, IDs and registry entries match.
 
+**A new image tool** works the same way: a config in `src/tools/image/ui/configs.tsx` (reusing `PdfToolShell`), its ID in `src/tools/image/ids.ts`, and an entry in `image-tools.ts`. Pixel work goes in a `Recipe` for `renderImage` (`src/tools/image/render.ts`), which runs in `image.worker.ts`. Viewers set `outputFormats: []` and return a result `node` instead of a file.
+
 ## Current tools
 
 | ID | Category | Status | Engine |
 |---|---|---|---|
-| `image-converter` | image | **verified** | Canvas API (OffscreenCanvas in a worker, canvas fallback) |
+| `image-converter` | image | **verified** | Canvas API (OffscreenCanvas in a worker) |
+| `jpg-to-png`, `png-to-jpg`, `jpg-to-webp`, `png-to-webp`, `webp-to-jpg`, `webp-to-png` | image | **verified** | Canvas API (OffscreenCanvas in a worker) |
+| `image-compressor`, `batch-image-compressor` | image | **verified** | Canvas API + oxipng (WASM) |
+| `image-resizer`, `image-cropper`, `image-rotator`, `image-flipper` | image | **verified** | Canvas API (OffscreenCanvas in a worker) |
+| `remove-image-metadata` | image | **verified** | Lossless byte editing (no re-encoding) |
+| `add-watermark-to-image`, `blur-image`, `pixelate-image`, `grayscale-image`, `adjust-image-brightness`, `adjust-image-contrast`, `adjust-image-saturation`, `image-colour-adjustment`, `meme-generator` | image | **verified** | Canvas API, pixel loops (no canvas `filter`) |
+| `image-metadata-viewer` | image | **verified** | exifr |
+| `image-info` | image | **verified** | Browser image decoding + exifr |
+| `image-colour-picker`, `colour-palette-generator`, `image-to-base64`, `base64-to-image`, `image-comparison` | image | **verified** | Canvas API / FileReader |
+| `favicon-generator` | image | **verified** | Canvas API + own PNG-in-ICO writer |
+| `batch-image-converter`, `batch-image-resizer` | image | **verified** | Canvas API, one file at a time, ZIP via fflate |
+| `heic-to-jpg`, `heic-to-png` | image | planned | libheif (LGPL-3.0), pending a licence decision (D47) |
+| `image-ocr` | image | planned | tesseract.js (deferred with OCR PDF, D39) |
 | `merge-pdf` | pdf | **verified** | pdf-lib |
 | `split-pdf` | pdf | **verified** | pdf-lib |
 | `rotate-pdf` | pdf | **verified** | pdf-lib |

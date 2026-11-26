@@ -41,7 +41,6 @@ describe("tool registry integrity", () => {
       expect(t.seoDescription.length).toBeGreaterThan(50);
       expect(t.seoDescription.length).toBeLessThanOrEqual(160);
       expect(t.inputFormats.length).toBeGreaterThan(0);
-      expect(t.outputFormats.length).toBeGreaterThan(0);
       expect(t.keywords.length).toBeGreaterThan(0);
     }
   });

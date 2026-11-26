@@ -85,7 +85,7 @@ test("rejects unsupported files with a clear message", async ({ page }) => {
 
 test("reports a damaged image instead of failing silently", async ({ page }) => {
   await page.goto("/image-converter/");
+  // Checked as soon as it's chosen, before any settings are shown.
   await page.locator('input[type="file"]').setInputFiles({ name: "broken.png", mimeType: "image/png", buffer: Buffer.from("not an image") });
-  await page.getByRole("button", { name: /^Convert to/ }).click();
   await expect(page.getByRole("alert")).toContainText("could not be opened");
 });

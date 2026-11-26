@@ -1,8 +1,8 @@
 # Architecture
 
-> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42).
+> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42). Image tools: Phase 05 (D43–D56).
 
-## Current state (Phase 04)
+## Current state (Phase 05)
 
 | Item | Location |
 |---|---|
@@ -14,6 +14,7 @@
 | Tool layout | `src/components/tool/` (breadcrumbs, file picker, privacy notice, settings, progress, result, instructions, formats, limitations, FAQs, related tools) |
 | Tools | `src/tools/<id>/` (UI, worker, processing code). `src/tools/index.ts` lazy-loads each one. |
 | PDF tools | `src/tools/pdf/`: `core/` (pure pdf-lib and qpdf code, unit-tested in Node), `browser/` (pdf.js rendering and text, canvas JPEG encoding, image normalising), `ops.ts` + `pdf.worker.ts` + `run.ts` (one worker for every operation), `ui/` (one config-driven `PdfToolShell`; `configs.tsx` holds the 31 tool configs). Registry entries are in `src/registry/pdf-tools.ts`. |
+| Image tools | `src/tools/image/`: `core/` (pure byte and pixel code: format sniffing, metadata stripping, pixel loops, sizes, ICO; unit-tested in Node), `decode.ts` (page-side decoding, safe SVG), `render.ts` + `image.worker.ts` + `run.ts` (one worker renders and encodes), `ui/` (configs for the 33 tools on the shared `PdfToolShell`, crop editor, colour picker, before/after comparison, viewers). Registry entries are in `src/registry/image-tools.ts`. |
 | Vendor assets | `scripts/vendor-assets.ts`: copies pdf.js CMaps, standard fonts, ICC profiles and decoder WASM to `dist/vendor/pdfjs/` (served from `node_modules` in dev). QuickJS, pdf.js's scripting engine, is excluded. Also stubs the Node built-ins that qpdf-wasm's loader imports. |
 | Workers | `src/lib/worker-bridge.ts` (`runWorker`, `runCancellable`, `CancelledError`) and `src/workers/protocol.ts` (progress, result and error messages) |
 | Shared helpers | `src/lib/files.ts` (sizes, extensions, `accept`, download), `src/lib/analytics.ts` (no-op adapter) |
@@ -25,7 +26,7 @@
 | Dev gallery | `src/app/Styleguide.tsx` at `/#styleguide`, dev only |
 | Apache rules | `public/.htaccess` → copied to `dist/` |
 | Unit tests | `src/**/*.test.ts(x)`, `scripts/**/*.test.ts`, Vitest + jsdom |
-| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`image-converter`, `pdf-tools`). See `TESTING.md`. |
+| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`image-converter`, `image-tools`, `pdf-tools`). See `TESTING.md`. |
 | Build | `npm run build` = `tsc --noEmit && vite build` → `dist/` (root-absolute `/` asset paths, D25) |
 
 ## Routing and static pages
@@ -66,6 +67,15 @@ Apache behaviour (mirrored by `scripts/serve-dist.mjs` in e2e):
 - **pdf.js hardening.** All data files come from `/vendor/pdfjs/` on our origin. No scripting, annotation or form layers, XFA off, no streaming or range requests. Password prompts are refused (the file is reported as encrypted).
 - **Limits.** Files over 1 GB are refused before reading. Inputs must start with `%PDF-`. Malformed files map to clear messages (`core/errors.ts`).
 - **Fidelity.** No tool rasterises pages unless it says so (PDF to JPG/PNG). Compress only re-encodes large JPEG photos and keeps the original when the result is not smaller.
+
+### Image tools
+
+- **Decode on the page, render in a worker.** `decodeImage` uses `createImageBitmap` with EXIF orientation, with an `<img>` fallback. The bitmap is transferred to `image.worker.ts`, which crops, rotates, flips, resizes, applies effects and text, and encodes on an OffscreenCanvas. Without OffscreenCanvas the same `renderImage` runs on the page (D44).
+- **SVG.** Parsed with DOMParser only to read its size, then drawn through `<img>` from a Blob URL, so scripts and external references never run or load (D51).
+- **Effects.** Pixel loops, not canvas `filter`, for identical results in Safari (D45).
+- **PNG.** oxipng WASM (single thread) optimises PNG output, loaded from our origin (D46).
+- **Limits and memory.** 50 MP and 20,000 px per side. Batch tools run one file at a time. Bitmaps are closed, canvases shrunk to 0×0 and object URLs revoked after use (D54).
+- **Metadata removal.** Byte editing for JPEG, PNG and WebP, with no re-encoding (D52).
 
 ## Constraints
 

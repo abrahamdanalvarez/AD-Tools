@@ -13,7 +13,8 @@ describe("searchTools", () => {
 
   it("matches by name, case- and accent-insensitive", () => {
     expect(ids("image conv")[0]).toBe("image-converter");
-    expect(ids("IMAGÉ")[0]).toBe("image-converter");
+    expect(ids("batch image conv")[0]).toBe("batch-image-converter");
+    expect(ids("IMAGÉ CONVERTER")[0]).toBe("image-converter");
   });
 
   it("matches keywords and alternative names", () => {
@@ -23,7 +24,8 @@ describe("searchTools", () => {
 
   it("matches file formats", () => {
     expect(ids("webp")).toContain("image-converter");
-    expect(ids("png to jpg")[0]).toBe("image-converter");
+    expect(ids("png to jpg")[0]).toBe("png-to-jpg");
+    expect(ids("png to jpg")).toContain("image-converter");
   });
 
   it("matches categories", () => {

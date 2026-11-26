@@ -1,10 +1,12 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import type { ToolDefinition } from "@/registry/types";
+import { imageToolIds } from "./image/ids";
 import { pdfToolIds } from "./pdf/ids";
 
 export type ToolComponent = LazyExoticComponent<ComponentType<{ tool: ToolDefinition }>>;
 
 const PdfToolPage = lazy(() => import("./pdf/PdfToolPage"));
+const ImageToolPage = lazy(() => import("./image/ImageToolPage"));
 
 /**
  * Tool ID → UI. Each tool is code-split, so its code (and any WASM or model)
@@ -12,6 +14,6 @@ const PdfToolPage = lazy(() => import("./pdf/PdfToolPage"));
  * must have an entry here (enforced by registry.test.ts).
  */
 export const toolComponents: Record<string, ToolComponent> = {
-  "image-converter": lazy(() => import("./image-converter/ImageConverter")),
   ...Object.fromEntries(pdfToolIds.map((id) => [id, PdfToolPage])),
+  ...Object.fromEntries(imageToolIds.map((id) => [id, ImageToolPage])),
 };

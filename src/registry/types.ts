@@ -54,7 +54,24 @@ export type IconKey =
   | "lock-open"
   | "wrench"
   | "highlighter"
-  | "file-search";
+  | "file-search"
+  | "crop"
+  | "flip"
+  | "sliders"
+  | "sun"
+  | "contrast"
+  | "droplet"
+  | "droplets"
+  | "pipette"
+  | "palette"
+  | "grid"
+  | "smile"
+  | "scaling"
+  | "binary"
+  | "columns"
+  | "app-window"
+  | "sun-moon"
+  | "image-minus";
 
 /**
  * planned: not started · in-progress: being built · verified: finished,

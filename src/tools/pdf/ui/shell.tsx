@@ -8,7 +8,8 @@ import { track } from "@/lib/analytics";
 import { downloadBlob, formatBytes } from "@/lib/files";
 import { CancelledError } from "@/lib/worker-bridge";
 import type { ToolDefinition } from "@/registry/types";
-import { codeOf, messageFor, pdfErrorMessages } from "../core/errors";
+import type { ImageInfo } from "@/tools/image/decode";
+import { pdfErrorMessages } from "../core/errors";
 import type { PdfInfo } from "../core/meta";
 import { readBytes, runPdf, type JobOptions } from "../run";
 import { ResultPreview } from "./previews";
@@ -18,6 +19,8 @@ export interface PickedFile {
   file: File;
   /** Facts read when the file was chosen (PDF inputs only). */
   info: PdfInfo | null;
+  /** Facts read when an image was chosen (image tools). */
+  image?: ImageInfo;
 }
 
 export interface Ctx {
@@ -36,6 +39,8 @@ export interface ToolResult {
   summary?: ReactNode;
   preview?: "pdf" | "images" | "text" | "none";
   text?: string;
+  /** Replaces the standard preview (for example a before/after comparison). */
+  node?: ReactNode;
   /** For read-only tools: shown instead of a download. */
   view?: ReactNode;
   zipName?: string;
@@ -66,6 +71,10 @@ export interface PdfToolConfig<S> {
   run: (s: S, ctx: Ctx, job: JobOptions) => Promise<ToolResult>;
   /** Read-only tools run straight after a file is chosen. */
   auto?: boolean;
+  /** Replaces the PDF inspection when a file is chosen (image tools). Throw to reject the file. */
+  inspectFile?: (file: File) => Promise<Pick<PickedFile, "info" | "image">>;
+  /** Error code → message. Defaults to the PDF messages. */
+  errors?: Record<string, string>;
 }
 
 type State =
@@ -91,7 +100,18 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
 
   const ctx: Ctx | null = files.length > 0 ? { files, first: files[0] } : null;
 
+  const errors: Record<string, string> = config.errors ?? pdfErrorMessages;
+  const messageFor = (err: unknown) => errors[err instanceof Error ? err.message : ""] ?? errors.unknown;
+
   const inspect = async (file: File): Promise<PickedFile | null> => {
+    if (config.inspectFile) {
+      try {
+        return { id: `f${nextId++}`, file, ...(await config.inspectFile(file)) };
+      } catch (err) {
+        setNotice(`${file.name}: ${messageFor(err)}`);
+        return null;
+      }
+    }
     if (config.input === "images" || config.inspect === false) return { id: `f${nextId++}`, file, info: null };
     try {
       const { data } = await runPdf({ op: "inspect", file: await readBytes(file) });
@@ -158,16 +178,16 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
         setState({ step: "ready" });
         return;
       }
-      const code = codeOf(err);
+      const code = err instanceof Error ? err.message : "";
       track({
         name: "process_fail",
         toolId: tool.id,
         reason:
           code === "too-large"
             ? "too-large"
-            : code === "not-pdf"
+            : code === "not-pdf" || code === "encode-unsupported"
               ? "unsupported"
-              : code === "damaged" || code === "image"
+              : code === "damaged" || code === "image" || code === "decode"
                 ? "decode"
                 : "unknown",
       });
@@ -277,9 +297,10 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
           <ResultPanel
             title={state.result.title ?? (state.result.files.length === 1 ? "Your file is ready" : `${state.result.files.length} files are ready`)}
             details={state.result.summary}
-            preview={<ResultPreview result={state.result} />}
+            preview={state.result.node ?? <ResultPreview result={state.result} />}
             onDownload={() => void download(state.result)}
             onReset={reset}
+            onEdit={config.Settings && !config.auto ? () => setState({ step: "ready" }) : undefined}
             downloadLabel={state.result.files.length === 1 ? `Download ${extLabel(state.result.files[0].name)}` : "Download all (ZIP)"}
           />
         ))}
@@ -287,7 +308,24 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
   );
 }
 
-const extLabel = (name: string) => name.slice(name.lastIndexOf(".") + 1).toUpperCase();
+/** Small preview of a chosen image. SVGs load as images, so their scripts never run. */
+function Thumb({ file }: { file: File }) {
+  const [url, setUrl] = useState<string>();
+  useEffect(() => {
+    const u = URL.createObjectURL(file);
+    setUrl(u);
+    return () => URL.revokeObjectURL(u);
+  }, [file]);
+  return (
+    <img
+      src={url}
+      alt=""
+      className="size-12 shrink-0 rounded border border-border bg-[repeating-conic-gradient(var(--surface-muted)_0_25%,transparent_0_50%)] bg-[length:12px_12px] object-contain"
+    />
+  );
+}
+
+const extLabel = (name: string) => name.slice(name.lastIndexOf(".") + 1).toUpperCase().replace("WEBP", "WebP");
 
 function FileList({
   files,
@@ -309,13 +347,14 @@ function FileList({
       <ol className="divide-y divide-border">
         {files.map((f, i) => (
           <li key={f.id} className="flex flex-wrap items-center gap-3 p-3">
-            <FileText aria-hidden className="size-5 shrink-0 text-primary-text" />
+            {f.image ? <Thumb file={f.file} /> : <FileText aria-hidden className="size-5 shrink-0 text-primary-text" />}
             <p className="min-w-0 flex-1">
               <span className="block truncate font-medium">{f.file.name}</span>
               <span className="text-muted-foreground">
                 {formatBytes(f.file.size)}
                 {f.info?.pageCount != null && ` · ${f.info.pageCount} ${f.info.pageCount === 1 ? "page" : "pages"}`}
                 {f.info?.encrypted && " · password protected"}
+                {f.image && ` · ${f.image.width} × ${f.image.height} · ${f.image.label}`}
               </span>
             </p>
             {multiple && !busy && (

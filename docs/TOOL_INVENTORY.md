@@ -1,6 +1,6 @@
 # Tool inventory
 
-_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26._
+_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26, and Phase 05, 2026-11-27._
 
 Status key:
 - **Verified:** shipped in Privora, tested, browser-only.
@@ -14,7 +14,15 @@ Only `verified` tools are shown. Each one passed unit tests and Playwright e2e t
 
 | Group | Tool | Status | Notes |
 |---|---|---|---|
-| Image | Image Converter | Verified | Phase 03 |
+| Image: convert | Image Converter, JPG↔PNG, JPG/PNG to WebP, WebP to JPG/PNG, Batch Image Converter | Verified | In: PNG, JPG, WebP, GIF, BMP, AVIF, SVG, ICO. Out: PNG, JPG, WebP. WebP output only where the browser can encode it (not Safari). Animated files keep their first frame, with a warning. JPG fills transparency with white, with a warning. |
+| Image: optimise | Image Compressor, Batch Image Compression, Resizer, Batch Resizer, Cropper, Rotator, Flipper | Verified | PNG is optimised losslessly with oxipng. The original is kept when the result isn't smaller. Up to 50 MP and 20,000 px per side. |
+| Image: privacy | Remove Image Metadata | Verified | JPG, PNG and WebP, edited without re-encoding (D52). Photos stay upright. |
+| Image: edit | Watermark, Blur, Pixelate, Grayscale, Brightness, Contrast, Saturation, Colour Adjustment, Meme Generator | Verified | Same result in every browser (pixel loops, D45). Text uses system fonts. |
+| Image: inspect | Metadata Viewer, Information Viewer, Colour Picker, Palette Generator, Image Comparison | Verified | Results show on the page. The metadata viewer warns about GPS location. |
+| Image: utilities | Favicon Generator, Image to Base64, Base64 to Image | Verified | Favicon: ICO (16/32/48) plus PNG app icons in a ZIP. Base64 to Image refuses SVG. |
+| Image | HEIC to JPG, HEIC to PNG | Planned, hidden | libheif is LGPL-3.0 and HEVC has patent risk. Owner licence decision (D47). |
+| Image | Image OCR | Planned, hidden | Deferred with OCR PDF (D39) |
+| Image | TIFF input; GIF, BMP and AVIF output | Not offered | TIFF: no clean browser decoder (D48). GIF, BMP, AVIF: browsers can't encode them (D49). |
 | PDF: organise | Merge, Split, Rotate, Reorder pages, Delete pages, Extract pages, Duplicate pages, Reverse page order | Verified | Text, links and page content are copied unchanged. Bookmarks and form fields are not carried into split or extracted files. |
 | PDF: convert | PDF to JPG, PDF to PNG | Verified | Rasterises by design (chosen DPI, canvas capped at 16 MP). Multiple pages download as a ZIP. |
 | PDF: convert | JPG to PDF, PNG to PDF, Image to PDF | Verified | JPG and PNG are embedded without re-encoding. WebP, GIF, BMP and AVIF are converted on a canvas first. EXIF orientation is honoured. |
@@ -66,7 +74,7 @@ The server-backed privatools tools (all 109 PDF tools plus the rest) are **exclu
 |---|---|---|
 | 04 PDF | Done: 31 tools verified (see above) | pdf-lib (MIT), pdfjs-dist (Apache-2.0), qpdf WASM (Apache-2.0 / ISC), fflate (MIT) |
 | Later | PDF OCR, PDF annotation (deferred from Phase 04) | tesseract.js (Apache-2.0), self-hosted language data |
-| 05 Image | convert, compress, resize, crop, rotate/flip, strip EXIF, watermark | Canvas / OffscreenCanvas, browser codecs |
+| 05 Image | Done: 33 tools verified (see above) | Canvas / OffscreenCanvas, exifr (MIT), @jsquash/oxipng (Apache-2.0, oxipng MIT), fflate (MIT) |
 | 06 AI | background removal | onnxruntime-web (MIT) plus a model with **permissive, verified weights** (not AGPL/non-commercial) |
 | 07 Dev/text | see the privatools list above | Native APIs, small MIT libraries |
 | 08 Audio/video | conversions, trim, extract audio | @ffmpeg/ffmpeg (MIT), but `@ffmpeg/core` is **GPL-2.0-or-later**: licence review |

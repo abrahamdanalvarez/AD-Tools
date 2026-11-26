@@ -22,6 +22,9 @@ Privora includes the following open-source software in its production build. Eac
 | qpdf | 12.2.0 | Apache-2.0 | © Jay Berkenbilt and qpdf contributors |
 | @neslinesli93/qpdf-wasm | 0.3.1 | ISC | © 2026 Tommaso Pifferi |
 | fflate | 0.8.3 | MIT | © 2026 Arjun Barrett |
+| exifr | 7.1.3 | MIT | © 2020 Mike Kovařík, Mutiny.cz |
+| jSquash oxipng (@jsquash/oxipng) | 2.3.0 | Apache-2.0 | © Jamie Sinclair (jSquash, based on Google's Squoosh codecs) |
+| Oxipng (WebAssembly build inside @jsquash/oxipng) | n/a | MIT | © 2016 Joshua Holmer |
 | Inter (font) | 5.3.0 (@fontsource-variable/inter) | OFL-1.1 | © 2016 The Inter Project Authors |
 | Plus Jakarta Sans (font; also outlined in the Privora wordmark) | 5.3.0 (@fontsource-variable/plus-jakarta-sans) | OFL-1.1 | © 2020 The Plus Jakarta Sans Project Authors |
 | JetBrains Mono (font) | 5.3.0 (@fontsource-variable/jetbrains-mono) | OFL-1.1 | © 2020 The JetBrains Mono Project Authors |
@@ -74,9 +77,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The fonts are distributed unmodified as WOFF2 files under the SIL Open Font License, Version 1.1. Full text: https://openfontlicense.org/open-font-license-official-text/. The fonts may be bundled with software but may not be sold on their own. The Privora logo artwork uses outlines of Plus Jakarta Sans glyphs. That is artwork made with the font, not a redistribution of the font software.
 
-### Apache License 2.0 (class-variance-authority, PDF.js, qpdf)
+### Apache License 2.0 (class-variance-authority, PDF.js, qpdf, @jsquash/oxipng)
 
-Full text: https://www.apache.org/licenses/LICENSE-2.0. None of these packages ships a NOTICE file. The PDF.js and qpdf code is used unmodified.
+Full text: https://www.apache.org/licenses/LICENSE-2.0. None of these packages ships a NOTICE file. The PDF.js, qpdf and @jsquash/oxipng code is used unmodified.
 
 ### Other licences
 

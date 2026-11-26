@@ -14,9 +14,10 @@ How Privora is tested, and what a tool must pass before it is marked `verified`.
 
 ## Unit tests
 
-- Default environment is jsdom. Pure engine code that needs real `Uint8Array`/WASM behaviour uses `// @vitest-environment node` (the PDF core and qpdf tests).
+- Default environment is jsdom. Pure engine code that needs real `Uint8Array`/WASM behaviour uses `// @vitest-environment node` (the PDF core, qpdf and image core tests).
 - Registry tests check every entry's required fields, visibility, slugs and icons, and that every PDF config has a matching ID and registry entry.
 - **PDF core** (`src/tools/pdf/core/core.test.ts`, `qpdf.test.ts`): range parsing; PDF detection by header; damaged-file errors; merge, split, extract, delete, reorder, reverse, duplicate and rotate; coordinates on rotated pages; watermark, page numbers and text as real text; WinAnsi limits; images to PDF (JPEG embedded byte for byte, EXIF orientation, A4); metadata edit and strip; flatten; image extraction; compress (shrinks photos, keeps text, returns the original when it can't help); repair of a broken cross-reference table; AES-256 protect and unlock, wrong and empty passwords.
+- **Image core** (`src/tools/image/core/core.test.ts`): format sniffing from bytes; animation detection (GIF, WebP, APNG); lossless metadata stripping for JPEG, PNG and WebP (scan data compared byte for byte, orientation kept); pixel adjustments, blur and palette; resize maths and limits; ICO writing; Base64 decoding; oxipng shrinking a PNG.
 - qpdf's Emscripten runtime sets `process.exitCode` in Node. The qpdf test resets it after each case so Vitest doesn't report a failure.
 
 ## Fixtures
@@ -29,7 +30,7 @@ All fixtures are synthetic. No real documents are used or committed.
 
 ## E2E tests (Playwright)
 
-Chromium runs every spec. Firefox and WebKit run the tool specs (`image-converter.spec.ts`, `pdf-tools.spec.ts`), set by `testMatch` in `playwright.config.ts`.
+Chromium runs every spec. Firefox and WebKit run the tool specs (`image-converter.spec.ts`, `image-tools.spec.ts`, `pdf-tools.spec.ts`), set by `testMatch` in `playwright.config.ts`.
 
 | Spec | Covers |
 |---|---|
@@ -38,7 +39,8 @@ Chromium runs every spec. Firefox and WebKit run the tool specs (`image-converte
 | `design-system.spec.ts` | Home, tool, credits and 404 pages: axe WCAG 2.2 AA, no horizontal scroll, theme toggle, skip link, mobile menu |
 | `image-converter.spec.ts` | A real conversion with an output signature check, rejection and error states |
 | `pdf-tools.spec.ts` | Every enabled PDF tool on real synthetic files, checking the downloaded output (see below) |
-| `pdf-a11y.spec.ts` | axe and no horizontal scroll on interactive PDF states (page picker, reorder, placement editor, signature, result) at 1280 and 375 px, light and dark |
+| `image-tools.spec.ts` | Every image tool on synthetic files: transparency, format pairs, animation warning, hostile SVG, batch ZIP names, compression, resize/crop/rotate/flip, metadata removal, effects, change settings, viewers, Base64 round trip, favicons, comparison, damaged and disguised files |
+| `pdf-a11y.spec.ts` | axe and no horizontal scroll on interactive PDF and image states (page picker, reorder, placement editor, signature, crop editor, colour picker, before/after result) at 1280 and 375 px, light and dark |
 
 ### What the PDF e2e tests check
 
@@ -48,9 +50,17 @@ Chromium runs every spec. Firefox and WebKit run the tool specs (`image-converte
 - **Errors.** A non-PDF renamed to `.pdf` is rejected. Damaged files are repaired or reported. Scanned (image-only) PDFs get a clear "no text" message.
 - **Cancel and reset.** Cancel returns to the settings. Start over clears the file, results and previews.
 
-### Privacy guard (every PDF test)
+### What the image e2e tests check
 
-An automatic fixture in `pdf-tools.spec.ts` fails the test when:
+- **Output.** Format read from the downloaded bytes, pixel size, transparency kept or filled, pixels changed by effects, EXIF gone and orientation kept after metadata removal, ZIP entry names.
+- **SVG safety.** A test SVG with a script and an external image: the script never runs and no request leaves the page.
+- **Warnings.** The animated GIF and JPG-from-transparent warnings appear before running.
+
+**Firefox and WebP downloads.** Firefox opens a downloaded `.webp` in a new tab instead of reporting a download, so `run()` in `e2e/fixtures.ts` captures the blob from the download link in Firefox, for WebP only. Every other case uses Playwright's download event.
+
+### Privacy guard (every PDF and image test)
+
+An automatic fixture in `e2e/fixtures.ts`, shared by `pdf-tools.spec.ts` and `image-tools.spec.ts`, fails the test when:
 
 - any request is not a GET (no uploads of any kind),
 - any request goes to another origin,

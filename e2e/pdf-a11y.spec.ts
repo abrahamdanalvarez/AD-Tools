@@ -1,10 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { makePdf } from "../src/tools/pdf/core/fixtures";
+import { makePdf, photoJpg } from "../src/tools/pdf/core/fixtures";
 
-// Accessibility of the interactive PDF tool states (settings with page
-// thumbnails, placement editor, signature pad, results), light and dark,
-// desktop and mobile.
+// Accessibility of the interactive PDF and image tool states (page
+// thumbnails, placement editor, signature pad, crop editor, colour picker,
+// before/after results), light and dark, desktop and mobile.
 
 const check = async (page: Page) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -13,6 +13,7 @@ const check = async (page: Page) => {
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 };
 
+const photo = { name: "photo.jpg", mimeType: "image/jpeg", buffer: Buffer.from(photoJpg()) };
 const pdfFile = async (pages: number) => ({ name: "doc.pdf", mimeType: "application/pdf", buffer: Buffer.from(await makePdf(pages)) });
 
 for (const viewport of [{ width: 1280, height: 900 }, { width: 375, height: 812 }]) {
@@ -41,6 +42,24 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 375, height: 812 
         await page.getByRole("button", { name: "Sign PDF" }).click();
         await expect(page.getByRole("button", { name: /^Download/ })).toBeVisible();
         await expect(page.getByRole("img", { name: "Preview of page 1" })).toBeVisible();
+        await check(page);
+      });
+
+      test("crop editor, colour picker and before/after result", async ({ page }) => {
+        await page.goto("/image-cropper/");
+        await page.locator('input[type="file"]').first().setInputFiles(photo);
+        await expect(page.getByRole("group", { name: /Crop area/ })).toBeVisible();
+        await check(page);
+
+        await page.goto("/image-colour-picker/");
+        await page.locator('input[type="file"]').first().setInputFiles(photo);
+        await expect(page.getByRole("button", { name: "Copy HEX" })).toBeVisible();
+        await check(page);
+
+        await page.goto("/image-compressor/");
+        await page.locator('input[type="file"]').first().setInputFiles(photo);
+        await page.getByRole("button", { name: "Compress image" }).click();
+        await expect(page.getByRole("slider", { name: /Comparison position/ })).toBeVisible();
         await check(page);
       });
     });

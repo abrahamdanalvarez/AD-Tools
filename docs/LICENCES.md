@@ -30,6 +30,16 @@ Status: `verified` (checked against the package or repo) · `unverified` (not ch
 | @neslinesli93/qpdf-wasm | 0.3.1 | ISC | Wraps qpdf 12.2.0 (Apache-2.0) |
 | fflate | 0.8.3 | MIT | |
 
+**Phase 05 additions, shipped (verified from `node_modules`, 2026-11-27):**
+
+| Package | Version | Licence | Notes |
+|---|---|---|---|
+| exifr | 7.1.3 | MIT © 2020 Mike Kovařík, Mutiny.cz | Metadata viewer and image info. Parses bytes only. |
+| @jsquash/oxipng | 2.3.0 | Apache-2.0 | Only the single-thread codec (`codec/pkg`) is bundled. It wraps oxipng (MIT © 2016 Joshua Holmer, `codec/LICENSE.codec.md`). |
+| wasm-feature-detect | 1.10.1 | Apache-2.0 | Installed as a dependency of @jsquash/oxipng. Not imported, so not shipped. |
+
+Evaluated and not added: utif (MIT, TIFF; its globals don't bundle, D48), libheif-js (LGPL-3.0, HEIC; D47), @jsquash/webp and mozjpeg (D50), tesseract.js (OCR deferred, D39).
+
 **Liberation Sans.** pdf.js uses these fonts to draw text in PDFs that rely on the standard Helvetica font without embedding it. They are served unmodified as separate files, with Red Hat's licence file beside them. That is distribution under GPL-2.0 (with its font exception), so the source must stay available: it is the TTF files themselves, and upstream at https://github.com/liberationfonts/liberation-fonts. This does not affect the licence of Privora's own code.
 
 **Phase 02 dev additions:** @testing-library/user-event 14.6.13 (MIT), @axe-core/playwright 4.14.1 and axe-core (MPL-2.0, test-only, not shipped).

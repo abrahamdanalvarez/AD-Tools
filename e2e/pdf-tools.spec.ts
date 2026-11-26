@@ -1,8 +1,7 @@
-import { expect, test as base, type Page } from "@playwright/test";
-import { unzipSync } from "fflate";
 import { fileURLToPath } from "node:url";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { choose, expect, open, pdf, run, test, unzip, type FileSpec } from "./fixtures";
 import { extractImages } from "../src/tools/pdf/core/extract-images";
 import { makePdf, pageWidth as W, photoJpg, tinyJpg, tinyPng, widths } from "../src/tools/pdf/core/fixtures";
 
@@ -10,57 +9,6 @@ import { makePdf, pageWidth as W, photoJpg, tinyJpg, tinyPng, widths } from "../
 // with pdf-lib and pdf.js (page order, rotation, text that is still real,
 // selectable text, images, encryption). Every test also proves that nothing
 // was uploaded or stored.
-
-type FileSpec = { name: string; mimeType: string; buffer: Buffer };
-const pdf = (name: string, bytes: Uint8Array): FileSpec => ({ name, mimeType: "application/pdf", buffer: Buffer.from(bytes) });
-
-const test = base.extend<{ guard: void }>({
-  guard: [
-    async ({ page, baseURL }, use) => {
-      const origin = new URL(baseURL!).origin;
-      const bad: string[] = [];
-      page.on("request", (r) => {
-        const u = new URL(r.url());
-        if (u.protocol === "blob:" || u.protocol === "data:") return;
-        if (r.method() !== "GET" || u.origin !== origin) bad.push(`${r.method()} ${r.url()}`);
-      });
-      page.on("response", (r) => {
-        if (r.status() >= 400 && new URL(r.url()).origin === origin) bad.push(`${r.status()} ${r.url()}`);
-      });
-      await use();
-      expect(bad, "no uploads, foreign or failed requests").toEqual([]);
-      const stored = await page.evaluate(async () => ({
-        local: localStorage.length,
-        session: sessionStorage.length,
-        idb: (await indexedDB.databases?.())?.length ?? 0,
-        caches: (await caches.keys()).length,
-      }));
-      expect(stored, "nothing persisted").toEqual({ local: 0, session: 0, idb: 0, caches: 0 });
-    },
-    { auto: true },
-  ],
-});
-
-async function open(page: Page, slug: string, files: FileSpec[]) {
-  await page.goto(`/${slug}/`);
-  await page.locator('input[type="file"]').first().setInputFiles(files);
-  await expect(page.getByText(files[0].name)).toBeVisible();
-}
-
-async function choose(page: Page, label: string | RegExp, option: string | RegExp) {
-  await page.getByRole("combobox", { name: label }).click();
-  await page.getByRole("option", { name: option }).click();
-}
-
-/** Click the action, wait for the result, download it. */
-async function run(page: Page, action: string | RegExp): Promise<{ name: string; bytes: Buffer }> {
-  await page.getByRole("button", { name: action }).click();
-  const button = page.getByRole("button", { name: /^Download/ });
-  await expect(button).toBeVisible({ timeout: 30_000 });
-  const [download] = await Promise.all([page.waitForEvent("download"), button.click()]);
-  const chunks = await (await download.createReadStream()).toArray();
-  return { name: download.suggestedFilename(), bytes: Buffer.concat(chunks) };
-}
 
 async function pageTexts(bytes: Uint8Array): Promise<string[]> {
   const task = getDocument({ data: new Uint8Array(bytes), standardFontDataUrl: FONTS });
@@ -85,7 +33,6 @@ async function photoPdf(): Promise<Uint8Array> {
 
 // pdf.js in Node wants forward slashes and a trailing slash, even on Windows.
 const FONTS = fileURLToPath(new URL("../node_modules/pdfjs-dist/standard_fonts/", import.meta.url)).replaceAll("\\", "/");
-const unzip = (b: Buffer) => unzipSync(new Uint8Array(b));
 
 test.describe("organise", () => {
   test("merge PDF keeps order and real text", async ({ page }) => {

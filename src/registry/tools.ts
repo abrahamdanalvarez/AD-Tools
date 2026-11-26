@@ -1,3 +1,4 @@
+import { imageTools } from "./image-tools.ts";
 import { pdfTools } from "./pdf-tools.ts";
 import type { BrowserSupport, ToolDefinition } from "./types";
 
@@ -9,68 +10,15 @@ import type { BrowserSupport, ToolDefinition } from "./types";
 export const modernBrowsers: BrowserSupport = { chrome: "111", edge: "111", firefox: "114", safari: "16.4" };
 
 export const tools: ToolDefinition[] = [
-  {
-    id: "image-converter",
-    name: "Image Converter",
-    slug: "image-converter",
-    category: "image",
-    description: "Convert images between PNG, JPG and WebP.",
-    icon: "image-convert",
-    keywords: [
-      "convert image", "png to jpg", "jpg to png", "webp to png", "png to webp", "jpg to webp", "webp to jpg",
-      "change image format", "image format converter", "photo converter", "picture converter",
-    ],
-    engine: "Canvas API (OffscreenCanvas)",
-    processingMode: "web-worker",
-    inputFormats: ["png", "jpg", "jpeg", "webp", "gif", "bmp", "avif"],
-    outputFormats: ["png", "jpg", "webp"],
-    browsers: {
-      ...modernBrowsers,
-      notes:
-        "WebP output appears only if your browser can create WebP files (some Safari versions cannot). AVIF input depends on browser support. Some older browsers convert on the page instead of in the background, which works the same but may pause the page briefly for large images.",
-    },
-    maxFileSizeMB: 50,
-    model: null,
-    enabled: true,
-    status: "verified",
-    popular: true,
-    seoTitle: "Image Converter — Free & Private Online Tool | Privora",
-    seoDescription:
-      "Convert images between PNG, JPG and WebP in your browser. Free, private and fast: your images are never uploaded.",
-    related: ["image-to-pdf", "pdf-to-jpg", "compress-pdf"],
-    limitations: [
-      "Animated GIF and WebP files are converted using their first frame only.",
-      "Converting removes image metadata such as camera details and location.",
-      "Transparent areas become white when converting to JPG.",
-      "Very large images (over about 16 megapixels on Safari) may fail because of browser canvas limits.",
-    ],
-    steps: [
-      "Choose an image from your device or drop it onto the page.",
-      "Pick the output format and, for JPG or WebP, the quality.",
-      "Select Convert. The work happens in your browser.",
-      "Download the converted image.",
-    ],
-    faqs: [
-      {
-        q: "Are my images uploaded?",
-        a: "No. Your browser decodes and re-encodes the image on your device. Nothing is sent to a server.",
-      },
-      {
-        q: "Why is WebP missing from the list?",
-        a: "Your browser can read WebP images but cannot create them (this happens in some versions of Safari). Choose PNG or JPG instead.",
-      },
-      {
-        q: "Does converting reduce quality?",
-        a: "PNG is lossless. JPG and WebP are compressed using the quality you choose. Higher quality means larger files.",
-      },
-    ],
-  },
-
+  ...imageTools(),
   ...pdfTools(),
 
   // ── Planned (hidden until verified) ─────────────────────────────────────
   planned("annotate-pdf", "PDF Annotation", "pdf", "highlighter", "Highlight, underline and comment on PDF pages.", ["pdf"], ["pdf"], "pdf-lib + pdf.js", ["annotate pdf", "highlight pdf", "comment pdf"]),
   planned("ocr-pdf", "OCR PDF", "pdf", "scan-text", "Make scanned PDFs searchable with on-device text recognition.", ["pdf"], ["pdf", "txt"], "tesseract.js", ["ocr", "scanned pdf", "searchable pdf"]),
+  planned("heic-to-jpg", "HEIC to JPG", "image", "image-convert", "Convert iPhone HEIC photos to JPG.", ["heic", "heif"], ["jpg"], "libheif (LGPL-3.0), pending a licence decision", ["heic to jpg", "iphone photo converter"]),
+  planned("heic-to-png", "HEIC to PNG", "image", "image-convert", "Convert iPhone HEIC photos to PNG.", ["heic", "heif"], ["png"], "libheif (LGPL-3.0), pending a licence decision", ["heic to png"]),
+  planned("image-ocr", "Image OCR", "image", "scan-text", "Copy the text out of a photo or screenshot with on-device text recognition.", ["png", "jpg", "jpeg", "webp"], ["txt"], "tesseract.js", ["ocr", "image to text", "extract text from image"]),
   planned("remove-background", "Remove Background", "ai", "eraser", "Remove the background from a photo using on-device AI.", ["png", "jpg", "jpeg", "webp"], ["png"], "ONNX Runtime Web", ["background remover", "transparent background", "cut out"]),
 ];
 
