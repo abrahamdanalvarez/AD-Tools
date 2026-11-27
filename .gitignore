@@ -2,3 +2,5 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+# Built by npm run fetch-models (too large for git)
+public/models/

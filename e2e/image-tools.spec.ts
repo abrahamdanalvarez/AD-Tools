@@ -2,13 +2,11 @@ import { encodePng } from "../src/tools/pdf/core/png";
 import { photoJpg, tinyJpg, withOrientation } from "../src/tools/pdf/core/fixtures";
 import { sniff } from "../src/tools/image/core/formats";
 import { jpegOrientation } from "../src/tools/pdf/core/images";
-import { choose, expect, open, run, test, unzip, type FileSpec, type Page } from "./fixtures";
+import { choose, decode, expect, file, open, run, test, unzip, type Page } from "./fixtures";
 
 // Every image tool, end to end, on synthetic images. Outputs are decoded again
 // in the browser to check format, dimensions, transparency and pixels. The
 // shared guard proves nothing is uploaded, fetched from elsewhere or stored.
-
-const file = (name: string, bytes: Uint8Array, mimeType = "application/octet-stream"): FileSpec => ({ name, mimeType, buffer: Buffer.from(bytes) });
 
 /** 40 × 30: left half opaque blue, right half fully transparent. */
 function twoTone(): Uint8Array {
@@ -30,23 +28,6 @@ const hostileSvg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://
   <image xlink:href="https://evil.example/track2.png" x="10" width="10" height="10"/>
   <rect width="20" height="30" fill="#2563eb"/>
 </svg>`;
-
-/** Decode an output in the browser: size and RGBA at some points. */
-async function decode(page: Page, bytes: Buffer, points: [number, number][] = []) {
-  return page.evaluate(
-    async ({ b64, points }) => {
-      const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-      const bm = await createImageBitmap(new Blob([bin]));
-      const c = document.createElement("canvas");
-      c.width = bm.width;
-      c.height = bm.height;
-      const g = c.getContext("2d")!;
-      g.drawImage(bm, 0, 0);
-      return { width: bm.width, height: bm.height, px: points.map(([x, y]) => [...g.getImageData(x, y, 1, 1).data]) };
-    },
-    { b64: bytes.toString("base64"), points },
-  );
-}
 
 /** A WebP made by this browser (Playwright's engines can all write WebP). */
 async function webpOf(page: Page, png: Uint8Array): Promise<Uint8Array> {

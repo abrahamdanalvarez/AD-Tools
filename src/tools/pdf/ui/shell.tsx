@@ -80,7 +80,7 @@ export interface PdfToolConfig<S> {
 type State =
   | { step: "select" }
   | { step: "ready" }
-  | { step: "working"; progress?: number }
+  | { step: "working"; progress?: number; label?: string }
   | { step: "done"; result: ToolResult }
   | { step: "error"; message: string };
 
@@ -168,7 +168,8 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
     try {
       const result = await config.run(s, c, {
         signal: controller.signal,
-        onProgress: (progress) => setState((st) => (st.step === "working" ? { step: "working", progress } : st)),
+        onProgress: (progress) => setState((st) => (st.step === "working" ? { ...st, progress } : st)),
+        onStatus: (label, progress) => setState((st) => (st.step === "working" ? { step: "working", label, progress } : st)),
       });
       if (controller.signal.aborted) throw new CancelledError();
       track({ name: "process_complete", toolId: tool.id });
@@ -281,7 +282,7 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
       )}
       {state.step === "error" && config.auto && <Alert tone="error" title="That didn't work">{state.message}</Alert>}
 
-      {busy && <ProcessingStatus progress={state.progress} label={config.working} onCancel={() => abortRef.current?.abort()} />}
+      {busy && <ProcessingStatus progress={state.progress} label={state.label ?? config.working} onCancel={() => abortRef.current?.abort()} />}
 
       {state.step === "done" &&
         (state.result.view ? (

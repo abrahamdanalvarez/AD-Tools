@@ -1,3 +1,4 @@
+import { aiTools } from "./ai-tools.ts";
 import { imageTools } from "./image-tools.ts";
 import { pdfTools } from "./pdf-tools.ts";
 import type { BrowserSupport, ToolDefinition } from "./types";
@@ -10,6 +11,7 @@ import type { BrowserSupport, ToolDefinition } from "./types";
 export const modernBrowsers: BrowserSupport = { chrome: "111", edge: "111", firefox: "114", safari: "16.4" };
 
 export const tools: ToolDefinition[] = [
+  ...aiTools(),
   ...imageTools(),
   ...pdfTools(),
 
@@ -19,7 +21,6 @@ export const tools: ToolDefinition[] = [
   planned("heic-to-jpg", "HEIC to JPG", "image", "image-convert", "Convert iPhone HEIC photos to JPG.", ["heic", "heif"], ["jpg"], "libheif (LGPL-3.0), pending a licence decision", ["heic to jpg", "iphone photo converter"]),
   planned("heic-to-png", "HEIC to PNG", "image", "image-convert", "Convert iPhone HEIC photos to PNG.", ["heic", "heif"], ["png"], "libheif (LGPL-3.0), pending a licence decision", ["heic to png"]),
   planned("image-ocr", "Image OCR", "image", "scan-text", "Copy the text out of a photo or screenshot with on-device text recognition.", ["png", "jpg", "jpeg", "webp"], ["txt"], "tesseract.js", ["ocr", "image to text", "extract text from image"]),
-  planned("remove-background", "Remove Background", "ai", "eraser", "Remove the background from a photo using on-device AI.", ["png", "jpg", "jpeg", "webp"], ["png"], "ONNX Runtime Web", ["background remover", "transparent background", "cut out"]),
 ];
 
 function planned(

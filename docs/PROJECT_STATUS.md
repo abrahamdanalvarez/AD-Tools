@@ -4,7 +4,7 @@ _Last updated: 2026-11-27_
 
 ## Current phase
 
-**Phase 05: Browser-based image tools.** Complete. Stopped for review. Phase 06 has not started.
+**Phase 06: Local AI processing and background removal.** Complete. Stopped for review. Phase 07 has not started.
 
 ## Completed tasks
 
@@ -71,6 +71,18 @@ _Last updated: 2026-11-27_
 - [x] The PDF shell is reused for image tools (D43). The Phase 03 `src/tools/image-converter/` folder is replaced by `src/tools/image/`.
 - [x] Docs: `DECISIONS.md` (D43–D56), `TOOL_INVENTORY.md`, `TOOL_REGISTRY.md`, `TESTING.md`, `ARCHITECTURE.md`, `SECURITY_AUDIT.md`, `LICENCES.md`, `ROADMAP.md`, `THIRD_PARTY_NOTICES.md`, credits page.
 
+### Phase 06
+- [x] Candidates evaluated for runtime, code and **weights** licences, size and browser support: @imgly/background-removal (AGPL, rejected), ISNet and chenjindu's build (weights unlicensed, rejected), RMBG (non-commercial), MODNet (portraits only), BiRefNet full and BEN2 (too large), transformers.js (not needed). ONNX Runtime Web is used directly (D61).
+- [x] Model: BiRefNet_lite (MIT), owner choice. The 1024 × 1024 export ran out of WebAssembly memory (`std::bad_alloc`, 6.4 GB peak), so the 512 × 512 export by Studio Ludens (MIT, same weights) is used (D68). Weights stored in 8 bits, 41 MB gzipped download (D58).
+- [x] Model hosting: `npm run fetch-models` downloads the pinned file, checks its SHA-256, quantises it with pinned Python packages, checks the SHA-256 again, and writes `public/models/` (git-ignored). The build stops if the model is missing (D59). The browser checks size and SHA-256 before use (D60).
+- [x] 2 AI tools verified and enabled: **AI Background Remover** (transparent, solid colour or own image; PNG, JPG, WebP) and **AI Subject Mask** (PNG).
+- [x] Not shipped: AI Image Upscaler, multi-class segmentation, Image OCR (D64, `AI_MODELS.md`).
+- [x] UX: choose or drop, preview, one-time download note with size, download progress, starting and removing labels, CPU or GPU and time shown, before/after slider, change background without re-running the AI, cancel, start over, clear errors (download failed, damaged, unsupported browser, out of memory, run failed, bad background image).
+- [x] WebGPU when available, CPU (WASM) otherwise. Runtime and model load lazily. One persistent worker, terminated on cancel and when leaving the page (D62).
+- [x] The exact AI privacy line on AI tool pages (D67).
+- [x] Licences: ONNX Runtime LICENSE and ThirdPartyNotices, BiRefNet MIT notice (© 2024 ZhengPeng, © 2026 Studio Ludens V.O.F.) in `public/licences/`, credits page, `THIRD_PARTY_NOTICES.md`.
+- [x] Docs: `AI_MODELS.md` and `BROWSER_COMPATIBILITY.md` (new), `DECISIONS.md` (D57–D68), `LICENCES.md`, `TESTING.md`, `ARCHITECTURE.md`, `TOOL_REGISTRY.md`, `TOOL_INVENTORY.md`, `SECURITY_AUDIT.md`, `ROADMAP.md`.
+
 ## Pending tasks
 
 - [ ] **Owner:** choose the project licence (MIT recommended)
@@ -82,20 +94,28 @@ _Last updated: 2026-11-27_
 - [ ] **Owner:** confirm you're comfortable shipping pdf.js's Liberation Sans fonts (GPL-2.0 with font exception, unmodified, see `LICENCES.md`)
 - [ ] **Owner:** HEIC decision: ship libheif-js (LGPL-3.0, as a separate replaceable WASM file) or keep HEIC hidden (D47)
 - [ ] Later: OCR PDF and Image OCR (self-hosted Tesseract data, no caching of output) and PDF Annotation
-- [ ] **Owner:** commit Phase 05 (uncommitted in the working tree)
+- [ ] **Owner:** commit Phase 06 (uncommitted in the working tree)
+- [ ] **Owner:** read the BiRefNet training-data caveat (DIS5K non-commercial terms, `AI_MODELS.md`) before any commercial use
+- [ ] **Owner:** on any machine that builds the site, install Python 3, run `pip install -r scripts/models/requirements.txt`, then `npm run fetch-models` once
+- [ ] Test WebGPU on real GPU hardware, and the AI tools on real Safari and phones
+- [ ] Later: a WebGPU-only high-detail (1024) mode, an upscaler, image OCR
 - [ ] Favourites (tool IDs only, as allowed by `PRIVACY.md`) were not part of the Phase 03 spec. Not built yet.
 
 ## Verified tools
 
 | Tool | Route | Verified in |
 |---|---|---|
+| AI Background Remover, AI Subject Mask | `/remove-background/`, `/ai-subject-mask/` | Chromium, Firefox, WebKit, CPU path (Playwright 1.65.1, Windows) |
 | 33 image tools (full list in `TOOL_REGISTRY.md`) | `/image-converter/`, `/image-compressor/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
 | 31 PDF tools (full list in `TOOL_REGISTRY.md`) | `/merge-pdf/`, `/split-pdf/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
 
-Planned and hidden: OCR PDF, PDF Annotation, HEIC to JPG, HEIC to PNG, Image OCR, Remove Background.
+Planned and hidden: OCR PDF, PDF Annotation, HEIC to JPG, HEIC to PNG, Image OCR.
 
 ## Known issues
 
+- AI tools run at 512 × 512, so single hairs can be softened on large photos. On the CPU they take about 10 s per photo on a desktop and need about 1.84 GB of memory. Phones may be slow or run out of memory. WebGPU was not tested on real hardware.
+- `dist/` is now 89 MB, mostly the model (41 MB) and the two ONNX Runtime WASM files (14.8 and 28.7 MB). Each file is under Cloudflare's 100 MB limit.
+- Build and run Playwright from PowerShell. A build started from Git Bash (`/e/...` path) bundled React twice, and every page crashed.
 - pdf-lib is unmaintained (last release 2021). It works and is tested, but watch for advisories (`SECURITY_AUDIT.md`).
 - pdf-lib is bundled twice (about 420 kB each, lazy): once in the PDF worker and once on the page for previews, inspection and the compress fallback.
 - Text tools (watermark, page numbers, add text) use the standard PDF fonts, so they accept Latin (WinAnsi) characters only. Other scripts get a clear error.
@@ -111,39 +131,40 @@ Planned and hidden: OCR PDF, PDF Annotation, HEIC to JPG, HEIC to PNG, Image OCR
 
 ## Blockers
 
-- None for Phase 06 code work.
-- Before Phase 06: a permissively licensed background-removal model.
+- None for Phase 07.
 - Before Phase 08: the ffmpeg GPL decision, plus `mod_headers` and Cloudflare passing COOP/COEP through.
 
 ## Architectural decisions
 
-See `DECISIONS.md` D1–D56. New this phase: D43 image tools reuse the PDF shell, D44 decode on the page and render in a worker, D45 pixel loops instead of canvas `filter`, D46 oxipng for PNG, D47 HEIC deferred, D48 no TIFF input, D49 PNG/JPG/WebP output only, D50 no WebP/JPEG codec WASM, D51 SVG only through `<img>`, D52 lossless metadata removal, D53 animation and transparency warnings, D54 one-at-a-time batches, D55 "Change settings", D56 exifr.
+See `DECISIONS.md` D1–D68. New this phase: D57 BiRefNet_lite, D58 8-bit weights and gzip, D59 fetch script, D60 hashed name and integrity check, D61 ONNX Runtime Web directly, D62 persistent worker and mask cache, D63 HTTP cache only, D64 subject mask shipped (upscaler and OCR not), D65 ONNX Runtime notices, D66 status labels, D67 AI privacy line, D68 the 512 × 512 export.
 
-## Test results (2026-11-27, Node v24.12.0, npm 11.6.2, Playwright 1.65.1)
+## Test results (2026-11-27, Node v24.12.0, npm 11.6.2, Playwright 1.65.1, Windows 10, Intel i5-9400)
 
 | Command | Result |
 |---|---|
 | `npm audit` | 0 vulnerabilities |
 | `npm run typecheck` | OK, no errors |
-| `npm test` | 10 files, **80/80 passed** (Phase 04's 68, plus 12 image core tests) |
-| `npm run build` | OK, no warnings. "static routes: 66 pages, sitemap.xml, robots.txt, 404.html". Main JS 362.33 kB (112.14 kB gzip), CSS 43.79 kB (12.47 kB gzip). Lazy: ImageToolPage 44.77 kB (16.35 kB gzip), image worker 4.55 kB, exifr 75.03 kB (26.52 kB gzip), oxipng WASM 164.17 kB (76.76 kB gzip), PdfToolPage 39.55 kB (13.27 kB gzip). Sum of all file sizes in `dist/`: 8.1 MB, of which `assets/` 5.1 MB and `vendor/pdfjs/` 3.2 MB. |
-| `npx playwright test` | **158/158 passed** in 2.2 min across Chromium, Firefox and WebKit |
+| `npm test` | 11 files, **85/85 passed** (Phase 05's 80, plus 4 AI helper tests and 1 AI registry test) |
+| `npm run fetch-models` | Downloaded the pinned 512 export (SHA-256 matched), "quantised 127 weights: 176.8 MB -> 44.6 MB", wrote `public/models/birefnet-lite-int8-c64e1a89.onnx.gz` (40,880,751 bytes) with the expected SHA-256. A second run prints "Model is up to date". |
+| `npm run build` | OK. "static routes: 68 pages, sitemap.xml, robots.txt, 404.html". Main JS 367.49 kB (113.94 kB gzip), CSS 44.55 kB (12.58 kB gzip). Lazy: AiToolPage 8.27 kB (3.70 kB gzip), ONNX Runtime CPU WASM 14,848.85 kB (3,878.24 kB gzip), WebGPU WASM 28,747.73 kB (7,279.10 kB gzip). `dist/` total 89.2 MB. |
+| `npx playwright test` | **171/171 passed** in 3.6 min across Chromium, Firefox and WebKit |
 
 E2E added this phase (details in `TESTING.md`):
 
-- **`image-tools.spec.ts` (15 tests × 3 browsers).** Every enabled image tool runs on synthetic files, and the output is checked from its bytes: format, size, transparency, pixels, EXIF and orientation, ZIP names. Also animated GIF, hostile SVG, damaged and disguised files.
-- **Shared privacy guard** (`e2e/fixtures.ts`), now used by the PDF and image specs: no non-GET requests, nothing to other origins, no same-origin 4xx/5xx, all storage empty.
-- **`pdf-a11y.spec.ts`** also covers the crop editor, colour picker and before/after result: axe WCAG 2.2 AA with 0 violations and no horizontal scroll at 1280 and 375 px, light and dark.
+- **`ai-tools.spec.ts` (3 tests × 3 browsers)** with the real model on the CPU path: failed download, progress labels, transparent PNG, solid colour JPG, own background image, a 4000 × 3000 image while offline, exactly one real model download, cancel and re-run, subject mask, damaged model, unsupported browser. The shared privacy guard runs on every test.
+- **`pdf-a11y.spec.ts`** also covers the AI background settings and result: axe WCAG 2.2 AA with 0 violations and no horizontal scroll at 1280 and 375 px, light and dark.
+
+Measured (details in `AI_MODELS.md`): CPU inference 9.1–10.2 s per photo in Chromium, Firefox and WebKit. Native peak memory 1.84 GB. Masks vs the float32 1024 model: IoU 0.9927–0.9975.
 
 Problems found and fixed during the phase:
 
-- **Firefox opens downloaded `.webp` files in a new tab** and reports no download event. The app is fine. The e2e helper captures the blob in Firefox for WebP only.
-- **The colour picker could read a blank canvas** if clicked before the image was drawn (an intermittent WebKit failure). Clicks are now ignored until the image is drawn.
-- **Base64 data URLs used the type the system reported** (sometimes `application/octet-stream`). They now use the type read from the bytes.
-- **The palette mixed a large area of one colour into the next.** The median cut now splits at the middle of the colour range.
+- **The 1024 × 1024 model ran out of WebAssembly memory** (`std::bad_alloc` in `OrtRun`). Its deformable convolutions create 822 MB tensors (6.4 GB peak). Switched to the 512 × 512 export (D68).
+- **Quantisation first missed most MatMul weights**, because they also feed `Identity` nodes. Those consumers are now ignored when choosing the axis.
+- **The ONNX Runtime GitHub repository returned 404**, so its LICENSE and ThirdPartyNotices came from the official 1.31.1 wheel (D65).
+- **A build from Git Bash bundled React twice**, and every page crashed (`Cannot read properties of null (reading 'useEffect')`). Builds from PowerShell are correct. Recorded under Known issues.
 
-Screenshots of the cropper, compressor result (desktop) and colour picker (mobile, dark) were reviewed by eye.
+Cutouts of three photos were reviewed by eye.
 
 ## Next development task
 
-**Phase 06: AI background removal and local AI tools** (see `ROADMAP.md`). Needs a background-removal model with permissive, verified weights. Wait for owner approval to start.
+**Phase 07: Developer, text and productivity tools** (see `ROADMAP.md`). Wait for owner approval to start.

@@ -1,6 +1,6 @@
 # Tool inventory
 
-_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26, and Phase 05, 2026-11-27._
+_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26, Phase 05 and Phase 06, 2026-11-27._
 
 Status key:
 - **Verified:** shipped in Privora, tested, browser-only.
@@ -35,7 +35,9 @@ Only `verified` tools are shown. Each one passed unit tests and Playwright e2e t
 | PDF: repair | Repair PDF | Verified | Rebuilds the cross-reference table and object structure. It cannot recover content that is truly missing. |
 | PDF | OCR PDF | Planned, hidden | Needs self-hosted Tesseract data and a no-cache setup (D39) |
 | PDF | PDF Annotation | Planned, hidden | Editor too large for this phase (D39) |
-| AI | Remove Background | Planned, hidden | Phase 06 |
+| AI | AI Background Remover | Verified | BiRefNet_lite (MIT) at 512 × 512, run on the device. One-time 41 MB model download from our origin. Transparent, solid colour or own image background; PNG, JPG, WebP. About 10 s per image on a desktop CPU, faster with WebGPU. |
+| AI | AI Subject Mask | Verified | Same model. Black-and-white PNG mask. |
+| AI | AI Image Upscaler, multi-class segmentation, Image OCR | Not shipped | Evaluated in Phase 06 (D64, `AI_MODELS.md`) |
 
 ## Upstream tools reviewed
 
@@ -75,6 +77,6 @@ The server-backed privatools tools (all 109 PDF tools plus the rest) are **exclu
 | 04 PDF | Done: 31 tools verified (see above) | pdf-lib (MIT), pdfjs-dist (Apache-2.0), qpdf WASM (Apache-2.0 / ISC), fflate (MIT) |
 | Later | PDF OCR, PDF annotation (deferred from Phase 04) | tesseract.js (Apache-2.0), self-hosted language data |
 | 05 Image | Done: 33 tools verified (see above) | Canvas / OffscreenCanvas, exifr (MIT), @jsquash/oxipng (Apache-2.0, oxipng MIT), fflate (MIT) |
-| 06 AI | background removal | onnxruntime-web (MIT) plus a model with **permissive, verified weights** (not AGPL/non-commercial) |
+| 06 AI | background removal | onnxruntime-web (MIT) plus BiRefNet_lite (MIT weights). **Done.** |
 | 07 Dev/text | see the privatools list above | Native APIs, small MIT libraries |
 | 08 Audio/video | conversions, trim, extract audio | @ffmpeg/ffmpeg (MIT), but `@ffmpeg/core` is **GPL-2.0-or-later**: licence review |

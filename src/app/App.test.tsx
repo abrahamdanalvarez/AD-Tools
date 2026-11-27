@@ -30,7 +30,7 @@ describe("homepage", () => {
     render(<App pathname="/" />);
     const section = screen.getByRole("region", { name: "Tool categories" });
     for (const c of visibleCategories()) expect(within(section).getAllByText(c.name).length).toBeGreaterThan(0);
-    expect(within(section).queryByText("AI Tools")).not.toBeInTheDocument();
+    expect(within(section).queryByText("Video Tools")).not.toBeInTheDocument();
     expect(within(section).queryByText("Coming soon")).not.toBeInTheDocument();
   });
 

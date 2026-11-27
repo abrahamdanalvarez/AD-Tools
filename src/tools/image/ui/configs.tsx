@@ -23,7 +23,7 @@ type Config<S> = PdfToolConfig<S>;
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
-const OUT: Record<OutputType, { ext: string; label: string; lossy: boolean }> = {
+export const OUT: Record<OutputType, { ext: string; label: string; lossy: boolean }> = {
   "image/png": { ext: "png", label: "PNG", lossy: false },
   "image/jpeg": { ext: "jpg", label: "JPG", lossy: true },
   "image/webp": { ext: "webp", label: "WebP", lossy: true },
@@ -40,14 +40,14 @@ export function canEncode(type: OutputType): boolean {
   }
   return encodable.get(type)!;
 }
-const outputs = () => (Object.keys(OUT) as OutputType[]).filter(canEncode);
+export const outputs = () => (Object.keys(OUT) as OutputType[]).filter(canEncode);
 
-const baseName = (f: File) => f.name.replace(/\.[^.]+$/, "") || "image";
+export const baseName = (f: File) => f.name.replace(/\.[^.]+$/, "") || "image";
 const img = (p: PickedFile) => p.image!;
 /** Keep JPG and WebP as they are; everything else becomes PNG (lossless, keeps transparency). */
 const sameType = (i: ImageInfo): OutputType => (i.format === "jpeg" ? "image/jpeg" : i.format === "webp" && canEncode("image/webp") ? "image/webp" : "image/png");
 
-const withImages = <S,>(c: Config<NoInfer<S>>): Config<S> => ({
+export const withImages = <S,>(c: Config<NoInfer<S>>): Config<S> => ({
   input: "images",
   errors: imageErrorMessages,
   inspectFile: async (file) => ({ info: null, image: await inspectImage(file) }),
@@ -114,7 +114,7 @@ async function processAll(ctx: Ctx, job: JobOptions, make: (p: PickedFile) => Jo
   };
 }
 
-function Notes({ ctx, type }: { ctx: Ctx; type?: OutputType }) {
+export function Notes({ ctx, type }: { ctx: Ctx; type?: OutputType }) {
   const animated = ctx.files.some((f) => f.image?.animated);
   const alpha = type === "image/jpeg" && ctx.files.some((f) => f.image?.alpha);
   return (
@@ -133,11 +133,11 @@ function Notes({ ctx, type }: { ctx: Ctx; type?: OutputType }) {
   );
 }
 
-function Quality({ s, set }: { s: { quality: number }; set: (p: { quality: number }) => void }) {
+export function Quality({ s, set }: { s: { quality: number }; set: (p: { quality: number }) => void }) {
   return <RangeField label="Quality" value={s.quality} min={10} max={100} step={5} onChange={(quality) => set({ quality })} format={(v) => `${v}%`} />;
 }
 
-function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+export function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   const id = useId();
   return (
     <Field label={label} id={id}>
@@ -147,7 +147,7 @@ function ColorField({ label, value, onChange }: { label: string; value: string; 
 }
 
 const anySvg = (ctx: Ctx) => ctx.files.some((f) => f.image?.format === "svg");
-const webpProblem = (t: OutputType) => (canEncode(t) ? null : "Your browser can't create WebP files. Try Chrome, Edge or Firefox, or choose another format.");
+export const webpProblem = (t: OutputType) => (canEncode(t) ? null : "Your browser can't create WebP files. Try Chrome, Edge or Firefox, or choose another format.");
 
 // ── convert ────────────────────────────────────────────────────────────────
 

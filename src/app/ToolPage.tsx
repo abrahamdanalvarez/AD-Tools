@@ -41,7 +41,7 @@ export function ToolPage({ tool }: { tool: ToolDefinition }) {
             <p className="mt-1 text-muted-foreground">{tool.description}</p>
           </div>
         </div>
-        <PrivacyNotice />
+        <PrivacyNotice ai={!!tool.model} />
       </div>
 
       <Suspense fallback={<Spinner label="Loading tool" />}>

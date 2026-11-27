@@ -81,3 +81,12 @@ describe("PDF tools", () => {
     for (const id of pdfToolIds) expect(tools.some((t) => t.id === id), id).toBe(true);
   });
 });
+
+describe("AI tools", () => {
+  it("has a UI config and a self-hosted model for exactly the AI tools listed in the tool map", async () => {
+    const { aiConfigs } = await import("@/tools/ai/configs");
+    const { aiToolIds } = await import("@/tools/ai/ids");
+    expect(Object.keys(aiConfigs).sort()).toEqual([...aiToolIds].sort());
+    for (const id of aiToolIds) expect(tools.find((t) => t.id === id)?.model?.path, id).toMatch(/^\/models\//);
+  });
+});

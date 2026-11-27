@@ -40,6 +40,16 @@ Status: `verified` (checked against the package or repo) · `unverified` (not ch
 
 Evaluated and not added: utif (MIT, TIFF; its globals don't bundle, D48), libheif-js (LGPL-3.0, HEIC; D47), @jsquash/webp and mozjpeg (D50), tesseract.js (OCR deferred, D39).
 
+**Phase 06 additions, shipped (verified 2026-11-27):**
+
+| Package / file | Version | Licence | Notes |
+|---|---|---|---|
+| onnxruntime-web | 1.31.1 | MIT © Microsoft Corporation | The npm package has no LICENSE file; the licence and ThirdPartyNotices.txt come from the official onnxruntime 1.31.1 release (PyPI wheel), shipped unmodified in `public/licences/`. Bundles onnxruntime-common 1.31.1 (MIT). Its WASM binaries contain third-party native code (Protocol Buffers BSD-3-Clause, Abseil Apache-2.0, Eigen MPL-2.0, ONNX MIT, SafeInt MIT, GSL MIT and others) covered by those notices. |
+| onnxruntime-web dependencies not bundled | flatbuffers 25.9.23 (Apache-2.0), protobufjs 7.6.6 (BSD-3-Clause), long 5.3.2 (Apache-2.0), guid-typescript 1.0.9 (ISC), platform 1.3.6 (MIT) | | Installed with the package, but absent from the two ORT bundles Privora loads (checked by searching them). |
+| BiRefNet_lite weights (ONNX, 512 × 512) | studioludens/birefnet-lite-512 revision 962e679 | MIT © 2024 ZhengPeng, © 2026 Studio Ludens V.O.F. | Weights quantised to 8 bits by Privora. Licence text in `public/licences/birefnet-LICENSE.txt`. Training-data caveat in `AI_MODELS.md`. |
+
+**Dev only (not shipped):** Python packages for `scripts/models/quantize.py`: numpy 2.5.5 (BSD-3-Clause), onnx 1.23.2 (Apache-2.0), protobuf 7.36.2 (BSD-3-Clause), ml_dtypes 0.7.0 (Apache-2.0).
+
 **Liberation Sans.** pdf.js uses these fonts to draw text in PDFs that rely on the standard Helvetica font without embedding it. They are served unmodified as separate files, with Red Hat's licence file beside them. That is distribution under GPL-2.0 (with its font exception), so the source must stay available: it is the TTF files themselves, and upstream at https://github.com/liberationfonts/liberation-fonts. This does not affect the licence of Privora's own code.
 
 **Phase 02 dev additions:** @testing-library/user-event 14.6.13 (MIT), @axe-core/playwright 4.14.1 and axe-core (MPL-2.0, test-only, not shipped).
@@ -63,7 +73,7 @@ Check the code licence **and** the weights' redistribution rights separately. Se
 
 | Model | Use | Source | Weights licence | Redistribution OK | Status |
 |---|---|---|---|---|---|
-| None selected | | | | | |
+| BiRefNet_lite (8-bit weights) | Background removal, subject mask | `studioludens/birefnet-lite-512` @ 962e679 (from `ZhengPeng7/BiRefNet_lite`) | MIT | Yes (with notice) | verified, shipped. See `AI_MODELS.md` |
 
 ## Fonts (verified via npm registry)
 

@@ -1,8 +1,8 @@
 # Architecture
 
-> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42). Image tools: Phase 05 (D43–D56).
+> Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42). Image tools: Phase 05 (D43–D56). AI tools: Phase 06 (D57–D68).
 
-## Current state (Phase 05)
+## Current state (Phase 06)
 
 | Item | Location |
 |---|---|
@@ -15,6 +15,7 @@
 | Tools | `src/tools/<id>/` (UI, worker, processing code). `src/tools/index.ts` lazy-loads each one. |
 | PDF tools | `src/tools/pdf/`: `core/` (pure pdf-lib and qpdf code, unit-tested in Node), `browser/` (pdf.js rendering and text, canvas JPEG encoding, image normalising), `ops.ts` + `pdf.worker.ts` + `run.ts` (one worker for every operation), `ui/` (one config-driven `PdfToolShell`; `configs.tsx` holds the 31 tool configs). Registry entries are in `src/registry/pdf-tools.ts`. |
 | Image tools | `src/tools/image/`: `core/` (pure byte and pixel code: format sniffing, metadata stripping, pixel loops, sizes, ICO; unit-tested in Node), `decode.ts` (page-side decoding, safe SVG), `render.ts` + `image.worker.ts` + `run.ts` (one worker renders and encodes), `ui/` (configs for the 33 tools on the shared `PdfToolShell`, crop editor, colour picker, before/after comparison, viewers). Registry entries are in `src/registry/image-tools.ts`. |
+| AI tools | `src/tools/ai/`: `model.ts` (pinned model manifest), `segment.ts` (download, gzip and SHA-256 check, worker life cycle, mask cache), `segment.worker.ts` (ONNX Runtime Web session), `tensor.ts`, `composite.ts` (cutout, colour or image background), `configs.tsx` (2 tools on the shared `PdfToolShell`), `AiToolPage.tsx`. Registry entries are in `src/registry/ai-tools.ts`. Model build: `scripts/models/` (`fetch.ts`, `quantize.py`, `require-models.ts`). See `AI_MODELS.md`. |
 | Vendor assets | `scripts/vendor-assets.ts`: copies pdf.js CMaps, standard fonts, ICC profiles and decoder WASM to `dist/vendor/pdfjs/` (served from `node_modules` in dev). QuickJS, pdf.js's scripting engine, is excluded. Also stubs the Node built-ins that qpdf-wasm's loader imports. |
 | Workers | `src/lib/worker-bridge.ts` (`runWorker`, `runCancellable`, `CancelledError`) and `src/workers/protocol.ts` (progress, result and error messages) |
 | Shared helpers | `src/lib/files.ts` (sizes, extensions, `accept`, download), `src/lib/analytics.ts` (no-op adapter) |
@@ -26,7 +27,7 @@
 | Dev gallery | `src/app/Styleguide.tsx` at `/#styleguide`, dev only |
 | Apache rules | `public/.htaccess` → copied to `dist/` |
 | Unit tests | `src/**/*.test.ts(x)`, `scripts/**/*.test.ts`, Vitest + jsdom |
-| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`image-converter`, `image-tools`, `pdf-tools`). See `TESTING.md`. |
+| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`ai-tools`, `image-converter`, `image-tools`, `pdf-tools`). See `TESTING.md`. |
 | Build | `npm run build` = `tsc --noEmit && vite build` → `dist/` (root-absolute `/` asset paths, D25) |
 
 ## Routing and static pages
@@ -76,6 +77,14 @@ Apache behaviour (mirrored by `scripts/serve-dist.mjs` in e2e):
 - **PNG.** oxipng WASM (single thread) optimises PNG output, loaded from our origin (D46).
 - **Limits and memory.** 50 MP and 20,000 px per side. Batch tools run one file at a time. Bitmaps are closed, canvases shrunk to 0×0 and object URLs revoked after use (D54).
 - **Metadata removal.** Byte editing for JPEG, PNG and WebP, with no re-encoding (D52).
+
+### AI tools
+
+- **Model.** BiRefNet_lite at 512 × 512, weights stored in 8 bits, gzipped to 41 MB and served from `/models/` on our origin (D57, D58, D68). `npm run fetch-models` builds it from a pinned upstream file; `public/models/` is git-ignored and the build stops if it's missing (D59).
+- **Download.** Lazy, on the first run. The page fetches the model, unzips it with `DecompressionStream`, and checks its size and SHA-256 before use. Progress shows in the shared status (D66). The browser's HTTP cache keeps it (hashed name, one-year cache); no Cache Storage or IndexedDB (D60, D63).
+- **Runtime.** onnxruntime-web 1.31.1 in one long-lived module worker. It loads the WebGPU build when an adapter exists, otherwise the smaller CPU-only build, and falls back to WASM if WebGPU fails (D61). Single thread until COOP/COEP (Phase 09).
+- **Memory.** The model needs about 1.84 GB at peak (native measurement), under the 4 GB WebAssembly limit. The 1024 × 1024 export needed 6.4 GB and failed (D68). Cancel and leaving the page terminate the worker. Masks are cached per image in a WeakMap, so a new background doesn't re-run the AI (D62).
+- **Output.** The 512 mask is scaled to the image's full size and applied on a canvas: transparent PNG/WebP, a solid colour, or the user's own image (drawn to cover). Canvases are zeroed afterwards.
 
 ## Constraints
 

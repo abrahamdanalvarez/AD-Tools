@@ -1,0 +1,7 @@
+# Development only: used by scripts/models/quantize.py (via npm run fetch-models).
+# Exact versions, so the quantised model's SHA-256 matches src/tools/ai/model.ts.
+numpy==2.5.5
+onnx==1.23.2
+protobuf==7.36.2
+ml_dtypes==0.7.0
+typing_extensions==4.16.0

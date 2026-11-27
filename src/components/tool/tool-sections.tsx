@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/feedback";
 import type { Faq, ToolDefinition } from "@/registry/types";
 
 /** Standard privacy notice. Only states what the architecture guarantees. */
-export function PrivacyNotice() {
+export function PrivacyNotice({ ai = false }: { ai?: boolean }) {
   return (
     <aside
       aria-label="Privacy"
@@ -20,6 +20,12 @@ export function PrivacyNotice() {
           Your files are processed directly in your browser. They are never uploaded to our servers, stored by our
           website or sent to external processing services.
         </p>
+        {ai && (
+          <p className="mt-1 text-muted-foreground">
+            This AI tool runs locally on your device. An initial model download may be required, but your images are never
+            sent to an AI processing server.
+          </p>
+        )}
       </div>
     </aside>
   );

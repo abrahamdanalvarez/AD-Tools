@@ -62,6 +62,20 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 375, height: 812 
         await expect(page.getByRole("slider", { name: /Comparison position/ })).toBeVisible();
         await check(page);
       });
+
+      test("AI background remover settings and result", async ({ page }) => {
+        test.setTimeout(300_000);
+        await page.goto("/remove-background/");
+        await page.locator('input[type="file"]').first().setInputFiles(photo);
+        await page.getByRole("combobox", { name: "Background" }).click();
+        await page.getByRole("option", { name: "Solid colour" }).click();
+        await expect(page.getByLabel("Background colour")).toBeVisible();
+        await check(page);
+
+        await page.getByRole("button", { name: "Remove background" }).click();
+        await expect(page.getByRole("slider", { name: /Comparison position/ })).toBeVisible({ timeout: 240_000 });
+        await check(page);
+      });
     });
   }
 }

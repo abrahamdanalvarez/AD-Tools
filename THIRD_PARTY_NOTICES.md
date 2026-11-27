@@ -25,6 +25,8 @@ Privora includes the following open-source software in its production build. Eac
 | exifr | 7.1.3 | MIT | © 2020 Mike Kovařík, Mutiny.cz |
 | jSquash oxipng (@jsquash/oxipng) | 2.3.0 | Apache-2.0 | © Jamie Sinclair (jSquash, based on Google's Squoosh codecs) |
 | Oxipng (WebAssembly build inside @jsquash/oxipng) | n/a | MIT | © 2016 Joshua Holmer |
+| ONNX Runtime Web (onnxruntime-web, its JS bundles and WebAssembly binaries) | 1.31.1 | MIT | © Microsoft Corporation. The WebAssembly binaries include third-party code listed in `licences/onnxruntime-ThirdPartyNotices.txt`, shipped with the site |
+| BiRefNet lite (AI model weights) | 512 × 512 ONNX export by Studio Ludens, revision 962e679 | MIT | © 2024 ZhengPeng (Peng Zheng), © 2026 Studio Ludens V.O.F. Licence text shipped at `licences/birefnet-LICENSE.txt`. Weights stored in 8 bits by Privora (modified) |
 | Inter (font) | 5.3.0 (@fontsource-variable/inter) | OFL-1.1 | © 2016 The Inter Project Authors |
 | Plus Jakarta Sans (font; also outlined in the Privora wordmark) | 5.3.0 (@fontsource-variable/plus-jakarta-sans) | OFL-1.1 | © 2020 The Plus Jakarta Sans Project Authors |
 | JetBrains Mono (font) | 5.3.0 (@fontsource-variable/jetbrains-mono) | OFL-1.1 | © 2020 The JetBrains Mono Project Authors |
@@ -56,6 +58,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+### ONNX Runtime third-party notices
+
+ONNX Runtime's WebAssembly build contains code from other projects (for example Protocol Buffers, Abseil, Eigen, ONNX, SafeInt and GSL) under their own licences: BSD, Apache-2.0, MIT, MPL-2.0 and others. Their full notices ship with the site at `/licences/onnxruntime-ThirdPartyNotices.txt`, taken unmodified from the official onnxruntime 1.31.1 release. ONNX Runtime's MIT licence ships at `/licences/onnxruntime-LICENSE.txt`.
 
 ### ISC License (Lucide, @neslinesli93/qpdf-wasm)
 

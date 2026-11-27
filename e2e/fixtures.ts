@@ -8,6 +8,7 @@ import { unzipSync } from "fflate";
 export { expect, type Page };
 
 export type FileSpec = { name: string; mimeType: string; buffer: Buffer };
+export const file = (name: string, bytes: Uint8Array, mimeType = "application/octet-stream"): FileSpec => ({ name, mimeType, buffer: Buffer.from(bytes) });
 export const pdf = (name: string, bytes: Uint8Array): FileSpec => ({ name, mimeType: "application/pdf", buffer: Buffer.from(bytes) });
 
 export const test = base.extend<{ guard: void }>({
@@ -49,10 +50,15 @@ export async function choose(page: Page, label: string | RegExp, option: string 
 }
 
 /** Click the action, wait for the result, download it. */
-export async function run(page: Page, action: string | RegExp): Promise<{ name: string; bytes: Buffer }> {
+export async function run(page: Page, action: string | RegExp, timeout = 30_000): Promise<{ name: string; bytes: Buffer }> {
   await page.getByRole("button", { name: action }).click();
+  return downloadResult(page, timeout);
+}
+
+/** Wait for the result of a job that is already running, then download it. */
+export async function downloadResult(page: Page, timeout = 30_000): Promise<{ name: string; bytes: Buffer }> {
   const button = page.getByRole("button", { name: /^Download/ });
-  await expect(button).toBeVisible({ timeout: 30_000 });
+  await expect(button).toBeVisible({ timeout });
   if (page.context().browser()?.browserType().name() === "firefox" && /WebP/.test((await button.textContent()) ?? "")) {
     // Firefox saves WebP files and then opens them from disk, which Playwright
     // reports as a closed page rather than a download. Capture the blob the app
@@ -75,3 +81,20 @@ export async function run(page: Page, action: string | RegExp): Promise<{ name: 
 }
 
 export const unzip = (b: Buffer) => unzipSync(new Uint8Array(b));
+
+/** Decode an output in the browser: size and RGBA at some points. */
+export async function decode(page: Page, bytes: Buffer, points: [number, number][] = []) {
+  return page.evaluate(
+    async ({ b64, points }) => {
+      const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      const bm = await createImageBitmap(new Blob([bin]));
+      const c = document.createElement("canvas");
+      c.width = bm.width;
+      c.height = bm.height;
+      const g = c.getContext("2d")!;
+      g.drawImage(bm, 0, 0);
+      return { width: bm.width, height: bm.height, px: points.map(([x, y]) => [...g.getImageData(x, y, 1, 1).data]) };
+    },
+    { b64: bytes.toString("base64"), points },
+  );
+}

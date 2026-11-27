@@ -9,12 +9,13 @@
 | `src/registry/types.ts` | `ToolDefinition`, `ToolCategory`, `IconKey`, `ToolStatus` and related types |
 | `src/registry/tools.ts` | The tool entries (spreads in `imageTools()` and `pdfTools()`), plus planned, hidden entries |
 | `src/registry/image-tools.ts` | The 33 image tool entries, built with a `tool()` helper (shared privacy FAQ, notes and formats) and `pair()` for the six format-pair converters |
+| `src/registry/ai-tools.ts` | The 2 AI tool entries (shared browsers, privacy and model FAQs, limits and model download info) |
 | `src/registry/pdf-tools.ts` | The 31 PDF tool entries, built with a small `tool()` helper that adds the shared privacy FAQ, notes and formats |
 | `src/registry/categories.ts` | The 10 categories (name, description, icon) |
 | `src/registry/registry.ts` | Queries: `visibleTools`, `toolBySlug`, `toolsInCategory`, `visibleCategories`, `popularTools`, `relatedTools`, `categoryById` |
 | `src/registry/search.ts` | Local search (`searchTools`) |
 | `src/components/icons.ts` | Maps `IconKey` strings to Lucide components |
-| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components. Every ID in `src/tools/pdf/ids.ts` maps to the one lazy `PdfToolPage`, and every ID in `src/tools/image/ids.ts` to `ImageToolPage`. |
+| `src/tools/index.ts` | Maps tool IDs to their lazy-loaded React components. Every ID in `src/tools/pdf/ids.ts` maps to the one lazy `PdfToolPage`, every ID in `src/tools/image/ids.ts` to `ImageToolPage`, and every ID in `src/tools/ai/ids.ts` to `AiToolPage`. |
 
 Registry data is plain (icons are string keys, not components), so the Node build script `scripts/static-routes.ts` can import it.
 
@@ -138,4 +139,5 @@ To switch off a verified tool (for example after a browser regression), set `ena
 | `repair-pdf` | pdf | **verified** | pdf-lib lenient parse and re-save |
 | `ocr-pdf` | pdf | planned | tesseract.js (D39) |
 | `annotate-pdf` | pdf | planned | to be decided (D39) |
-| `remove-background` | ai | planned | ONNX Runtime Web |
+| `remove-background` | ai | **verified** | ONNX Runtime Web (WebGPU or WebAssembly) + BiRefNet_lite |
+| `ai-subject-mask` | ai | **verified** | ONNX Runtime Web (WebGPU or WebAssembly) + BiRefNet_lite |

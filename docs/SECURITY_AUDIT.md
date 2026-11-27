@@ -1,5 +1,14 @@
 # Security audit
 
+## Phase 06 update (2026-11-27)
+
+- **New runtime dependency:** onnxruntime-web 1.31.1 (MIT), exact pin. `npm audit`: 0 vulnerabilities. Its WebAssembly builds have no telemetry (ONNX Runtime's privacy notice). The WASM files and the model are served from our origin.
+- **Model integrity.** The model is checked twice: by `npm run fetch-models` (pinned upstream SHA-256 and quantised SHA-256) and by the browser (gzip header, unzipped size and SHA-256) before ONNX Runtime parses it. A fake or truncated file gets a clear error (e2e tested).
+- **No inference server.** The image never leaves the page and the worker. The e2e privacy guard runs on every AI test in Chromium, Firefox and WebKit: no non-GET requests, nothing to other origins, and empty localStorage, sessionStorage, IndexedDB and Cache Storage.
+- **Memory.** The worker is terminated on cancel and when leaving the page. Large images are decoded with the existing 50 MP limit; only a 512 × 512 copy reaches the model.
+- **Dev-only Python** (numpy, onnx, protobuf, ml_dtypes, typing_extensions, exact pins) runs only in `npm run fetch-models`. Nothing from it ships.
+- **Owner note.** The training-data caveat in `AI_MODELS.md` (DIS5K terms) is a licensing risk, not a security one.
+
 ## Phase 05 update (2026-11-27)
 
 - **New runtime dependencies:** exifr 7.1.3 (MIT) and @jsquash/oxipng 2.3.0 (Apache-2.0, oxipng MIT). Exact pins. `npm audit`: 0 vulnerabilities. utif was tried and removed (D48).

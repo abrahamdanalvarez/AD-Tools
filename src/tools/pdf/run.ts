@@ -10,6 +10,8 @@ const needsOffscreen = new Set<PdfOp["op"]>(["compress"]);
 export interface JobOptions {
   signal?: AbortSignal;
   onProgress?: (p: number) => void;
+  /** Replaces the progress label (for example "Downloading the AI model…"); progress is undefined when unknown. */
+  onStatus?: (label: string, progress?: number) => void;
 }
 
 /** Distributes Omit over the union so each op keeps its own fields. */

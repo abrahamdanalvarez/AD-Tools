@@ -10,6 +10,9 @@ Options -Indexes
   AddType application/wasm .wasm
   AddType text/javascript .mjs
   AddType application/manifest+json .webmanifest
+  # Model files are .onnx.gz: send the gzip bytes as they are, without Content-Encoding.
+  RemoveEncoding .gz
+  AddType application/gzip .gz
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -21,6 +24,11 @@ Options -Indexes
   # names and change only with a pdfjs-dist upgrade: cache for a week.
   <If "%{REQUEST_URI} =~ m#^/vendor/#">
     Header set Cache-Control "public, max-age=604800"
+  </If>
+  # AI models have their content hash in the name: cache for a year. Served
+  # as stored (gzipped bytes); the browser unzips them itself.
+  <If "%{REQUEST_URI} =~ m#^/models/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </If>
   # Always revalidate pages so new deploys show up.
   <FilesMatch "\.html$">

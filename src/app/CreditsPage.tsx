@@ -20,6 +20,8 @@ const credits = [
   { name: "exifr", licence: "MIT", by: "Mike Kovařík", url: "https://github.com/MikeKovarik/exifr" },
   { name: "jSquash (@jsquash/oxipng)", licence: "Apache-2.0", by: "Jamie Sinclair", url: "https://github.com/jamsinclair/jSquash" },
   { name: "Oxipng", licence: "MIT", by: "Joshua Holmer", url: "https://github.com/shssoichiro/oxipng" },
+  { name: "ONNX Runtime Web", licence: "MIT", by: "Microsoft Corporation (third-party notices: /licences/onnxruntime-ThirdPartyNotices.txt)", url: "/licences/onnxruntime-ThirdPartyNotices.txt" },
+  { name: "BiRefNet lite (AI model)", licence: "MIT", by: "Peng Zheng et al. 512 × 512 ONNX export by Studio Ludens, 8-bit weights by Privora", url: "/licences/birefnet-LICENSE.txt" },
   { name: "Liberation Sans (used by PDF.js)", licence: "GPL-2.0 with font exception", by: "Red Hat, Inc.", url: "https://github.com/liberationfonts/liberation-fonts" },
   { name: "Inter", licence: "SIL OFL 1.1", by: "The Inter Project Authors", url: "https://rsms.me/inter/" },
   { name: "Plus Jakarta Sans", licence: "SIL OFL 1.1", by: "The Plus Jakarta Sans Project Authors", url: "https://github.com/tokotype/PlusJakartaSans" },
