@@ -21,7 +21,9 @@ export function replaceExtension(name: string, ext: string): string {
   return `${dot === -1 ? name : name.slice(0, dot)}.${ext}`;
 }
 
+/** "*" in `formats` means any file. */
 export function acceptAttribute(formats: string[]): string {
+  if (formats.includes("*")) return "";
   return formats.map((f) => `.${f}`).join(",");
 }
 

@@ -90,3 +90,20 @@ describe("AI tools", () => {
     for (const id of aiToolIds) expect(tools.find((t) => t.id === id)?.model?.path, id).toMatch(/^\/models\//);
   });
 });
+
+describe("Developer, text, productivity and file tools", () => {
+  it("has a config and a verified registry entry for exactly the tools listed in each tool map", async () => {
+    const ids = await import("@/tools/text/ids");
+    const { fileToolIds } = await import("@/tools/file/ids");
+    const groups: [Record<string, unknown>, readonly string[]][] = [
+      [(await import("@/tools/text/ui/dev")).devConfigs, ids.devToolIds],
+      [(await import("@/tools/text/ui/text")).textConfigs, ids.textToolIds],
+      [(await import("@/tools/text/ui/calc")).calcConfigs, ids.calcToolIds],
+      [(await import("@/tools/file/configs")).fileConfigs, fileToolIds],
+    ];
+    for (const [configs, list] of groups) {
+      expect(Object.keys(configs).sort()).toEqual([...list].sort());
+      for (const id of list) expect(tools.find((t) => t.id === id)?.status, id).toBe("verified");
+    }
+  });
+});

@@ -76,6 +76,43 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 375, height: 812 
         await expect(page.getByRole("slider", { name: /Comparison position/ })).toBeVisible({ timeout: 240_000 });
         await check(page);
       });
+
+      test("typed-input tools: results, errors, previews and tables", async ({ page }) => {
+        await page.goto("/json-formatter/");
+        await page.getByLabel("JSON", { exact: true }).fill('{"a":[1,2]}');
+        await expect(page.getByLabel("Formatted JSON")).toBeVisible();
+        await check(page);
+
+        await page.getByLabel("JSON", { exact: true }).fill('{"a":');
+        await expect(page.getByText("Check your input")).toBeVisible();
+        await check(page);
+
+        await page.goto("/regex-tester/");
+        await page.getByLabel("Regular expression", { exact: true }).fill("(\\d+)");
+        await page.getByLabel("Test text", { exact: true }).fill("a 12 b 345");
+        await expect(page.getByText(/2 matches/)).toBeVisible();
+        await check(page);
+
+        for (const slug of ["markdown-editor", "text-diff-checker", "qr-code-generator", "loan-calculator", "css-gradient-generator", "password-generator"]) {
+          await page.goto(`/${slug}/`);
+          if (slug === "text-diff-checker") {
+            await page.getByLabel("Original text").fill("the cat sat");
+            await page.getByLabel("Changed text").fill("the dog sat");
+          }
+          if (slug === "qr-code-generator") await page.getByLabel("Text or link").fill("https://example.com");
+          await expect(page.getByRole("region", { name: "Result" }).locator("dl, textarea, pre, table, svg, img, [role=img]").first()).toBeVisible();
+          await check(page);
+        }
+      });
+
+      test("ZIP extractor list", async ({ page }) => {
+        const { zipSync, strToU8 } = await import("fflate");
+        const zip = Buffer.from(zipSync({ "docs/readme.txt": strToU8("hi"), "photo.jpg": strToU8("x") }));
+        await page.goto("/zip-file-extractor/");
+        await page.locator('input[type="file"]').first().setInputFiles({ name: "a.zip", mimeType: "application/zip", buffer: zip });
+        await expect(page.getByRole("button", { name: "Download docs/readme.txt" })).toBeVisible();
+        await check(page);
+      });
     });
   }
 }

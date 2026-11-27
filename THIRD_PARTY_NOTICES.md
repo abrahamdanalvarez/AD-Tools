@@ -27,6 +27,18 @@ Privora includes the following open-source software in its production build. Eac
 | Oxipng (WebAssembly build inside @jsquash/oxipng) | n/a | MIT | © 2016 Joshua Holmer |
 | ONNX Runtime Web (onnxruntime-web, its JS bundles and WebAssembly binaries) | 1.31.1 | MIT | © Microsoft Corporation. The WebAssembly binaries include third-party code listed in `licences/onnxruntime-ThirdPartyNotices.txt`, shipped with the site |
 | BiRefNet lite (AI model weights) | 512 × 512 ONNX export by Studio Ludens, revision 962e679 | MIT | © 2024 ZhengPeng (Peng Zheng), © 2026 Studio Ludens V.O.F. Licence text shipped at `licences/birefnet-LICENSE.txt`. Weights stored in 8 bits by Privora (modified) |
+| Prettier (prettier/standalone and its parser plugins) | 3.10.1 | MIT | © James Long and contributors. The plugins bundle third-party code listed in `licences/prettier-THIRD-PARTY-NOTICES.md`, shipped with the site |
+| SQL Formatter (sql-formatter) | 15.9.0 | MIT | © 2016-2020 ZeroTurnaround LLC, © 2020-2021 George Leslie-Waksman and contributors |
+| nearley (runtime, bundled by sql-formatter) | 2.20.1 | MIT | © 2014-2019 Kartik Chandra, Tim Radvan |
+| yaml | 2.9.1 | ISC | © Eemeli Aro |
+| Papa Parse (papaparse) | 5.7.1 | MIT | © 2015 Matthew Holt |
+| Marked (marked) | 18.2.0 | MIT | © 2018+ MarkedJS, © 2011-2018 Christopher Jeffrey |
+| DOMPurify (dompurify) | 3.4.17 | Apache-2.0 (dual-licensed MPL-2.0 OR Apache-2.0; used under Apache-2.0) | © Cure53 and other contributors |
+| uqr | 0.1.3 | MIT | © Project Nayuki, © 2023 Anthony Fu |
+| jsQR (jsqr) | 1.4.0 | Apache-2.0 | © Cosmo Wolfe |
+| hash-wasm | 4.13.0 | MIT | © 2020 Dani Biró |
+| jsdiff (diff) | 9.0.0 | BSD-3-Clause | © 2009-2015 Kevin Decker. Licence text below |
+| cRonstrue (cronstrue) | 3.39.0 | MIT | © 2017 Brady Holt |
 | Inter (font) | 5.3.0 (@fontsource-variable/inter) | OFL-1.1 | © 2016 The Inter Project Authors |
 | Plus Jakarta Sans (font; also outlined in the Privora wordmark) | 5.3.0 (@fontsource-variable/plus-jakarta-sans) | OFL-1.1 | © 2020 The Plus Jakarta Sans Project Authors |
 | JetBrains Mono (font) | 5.3.0 (@fontsource-variable/jetbrains-mono) | OFL-1.1 | © 2020 The JetBrains Mono Project Authors |
@@ -63,7 +75,7 @@ SOFTWARE.
 
 ONNX Runtime's WebAssembly build contains code from other projects (for example Protocol Buffers, Abseil, Eigen, ONNX, SafeInt and GSL) under their own licences: BSD, Apache-2.0, MIT, MPL-2.0 and others. Their full notices ship with the site at `/licences/onnxruntime-ThirdPartyNotices.txt`, taken unmodified from the official onnxruntime 1.31.1 release. ONNX Runtime's MIT licence ships at `/licences/onnxruntime-LICENSE.txt`.
 
-### ISC License (Lucide, @neslinesli93/qpdf-wasm)
+### ISC License (Lucide, @neslinesli93/qpdf-wasm, yaml)
 
 ```
 Permission to use, copy, modify, and/or distribute this software for any
@@ -83,9 +95,41 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The fonts are distributed unmodified as WOFF2 files under the SIL Open Font License, Version 1.1. Full text: https://openfontlicense.org/open-font-license-official-text/. The fonts may be bundled with software but may not be sold on their own. The Privora logo artwork uses outlines of Plus Jakarta Sans glyphs. That is artwork made with the font, not a redistribution of the font software.
 
-### Apache License 2.0 (class-variance-authority, PDF.js, qpdf, @jsquash/oxipng)
+### Apache License 2.0 (class-variance-authority, PDF.js, qpdf, @jsquash/oxipng, DOMPurify, jsQR)
 
 Full text: https://www.apache.org/licenses/LICENSE-2.0. None of these packages ships a NOTICE file. The PDF.js, qpdf and @jsquash/oxipng code is used unmodified.
+
+### BSD 3-Clause License (jsdiff)
+
+```
+Copyright (c) 2009-2015, Kevin Decker <kpdecker@gmail.com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
 
 ### Other licences
 

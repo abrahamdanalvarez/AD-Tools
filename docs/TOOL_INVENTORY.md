@@ -1,6 +1,6 @@
 # Tool inventory
 
-_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26, Phase 05 and Phase 06, 2026-11-27._
+_Phase 01, 2026-11-26. Updated for Phase 04, 2026-11-26, and Phases 05, 06 and 07, 2026-11-27._
 
 Status key:
 - **Verified:** shipped in Privora, tested, browser-only.
@@ -38,8 +38,23 @@ Only `verified` tools are shown. Each one passed unit tests and Playwright e2e t
 | AI | AI Background Remover | Verified | BiRefNet_lite (MIT) at 512 × 512, run on the device. One-time 41 MB model download from our origin. Transparent, solid colour or own image background; PNG, JPG, WebP. About 10 s per image on a desktop CPU, faster with WebGPU. |
 | AI | AI Subject Mask | Verified | Same model. Black-and-white PNG mask. |
 | AI | AI Image Upscaler, multi-class segmentation, Image OCR | Not shipped | Evaluated in Phase 06 (D64, `AI_MODELS.md`) |
+| Developer: format | JSON Formatter, JSON Validator, JSON Minifier, XML, HTML, CSS, JavaScript, SQL and YAML Formatters | Verified | Prettier for HTML, CSS/SCSS/Less and JS/TS (code is parsed, never run). SQL for 10 dialects. XML with the browser's DOMParser, no external entities (D72). YAML keeps comments. |
+| Developer: encode | Base64, URL and HTML Entity Encoder and Decoder, JWT Decoder | Verified | UTF-8 throughout. The JWT Decoder says plainly that it does not verify signatures (D78). |
+| Developer: generate | UUID (v4, v7), Password, Random String, Hash (MD5, SHA-1/256/384/512, SHA-3, CRC32), QR Code, Slug, Cron Expression | Verified | Web Crypto only for random values, no modulo bias (D75). QR: PNG and SVG, static codes. Cron: 5-field syntax, plain-English text and next runs. |
+| Developer: convert | JSON↔CSV, JSON↔YAML, JSON↔XML | Verified | CSV output is protected against spreadsheet formula injection (D79). |
+| Developer: test and inspect | Regex Tester, Unix Timestamp Converter, Date Format Converter, Markdown Preview, QR Code Reader | Verified | Regex runs in a worker with a 2 s limit (D74). Markdown is sanitised and never loads remote images (D77). The QR reader takes an image, not the camera (D73). |
+| Developer: CSS and colour | Colour Converter, HEX to RGB, RGB to HEX, CSS Gradient Generator, CSS Shadow Generator | Verified | HEX, RGB, HSL, HSV, CMYK and WCAG contrast. HEX to RGB and RGB to HEX share the converter (D80). |
+| Text: count | Word, Character, Sentence and Paragraph Counters, Reading Time Calculator | Verified | Unicode-aware (Intl.Segmenter): an emoji counts as one character. |
+| Text: transform | Text Case, Uppercase, Lowercase and Title Case Converters, Remove Duplicate Lines, Sort Text Lines, Reverse Text, Remove Extra Spaces, Remove Empty Lines, Find and Replace, Text Cleaner | Verified | Find and Replace supports regular expressions (same worker and limit as the Regex Tester). |
+| Text: compare and write | Text Diff Checker, Lorem Ipsum Generator, Markdown Editor | Verified | Diff by line, word or character, up to 500,000 characters. The Markdown Editor saves nothing: download .md or .html. |
+| Productivity | Unit, Percentage, Date, Age, Time Duration, Loan, BMI, Tip and Discount Calculators, File Size Converter | Verified | Each tool states its assumptions (exact unit definitions, fixed-rate loans, adult BMI, 29 February birthdays, overnight shifts). |
+| File | ZIP File Creator, ZIP File Extractor, File Checksum Generator | Verified | ZIP bomb, size and path-traversal protection (D76). Checksums stream the file in chunks. |
 
 ## Upstream tools reviewed
+
+### it-tools (CorentinTh, GPL-3.0, reference only)
+
+Reviewed in Phase 07 as a checklist of developer tools people expect. Its GPL-3.0 licence would apply to Privora's code, so nothing was copied: every Privora tool was written separately with permissive libraries (D69). Tools it has that Privora doesn't yet (for example IPv4 subnet calculator, BIP39, OTP, chmod calculator, MIME types) are candidates for later phases.
 
 ### BentoPDF (AGPL-3.0, reference only)
 
@@ -78,5 +93,5 @@ The server-backed privatools tools (all 109 PDF tools plus the rest) are **exclu
 | Later | PDF OCR, PDF annotation (deferred from Phase 04) | tesseract.js (Apache-2.0), self-hosted language data |
 | 05 Image | Done: 33 tools verified (see above) | Canvas / OffscreenCanvas, exifr (MIT), @jsquash/oxipng (Apache-2.0, oxipng MIT), fflate (MIT) |
 | 06 AI | background removal | onnxruntime-web (MIT) plus BiRefNet_lite (MIT weights). **Done.** |
-| 07 Dev/text | see the privatools list above | Native APIs, small MIT libraries |
+| 07 Dev/text/productivity/file | Done: 68 tools verified (see above) | Native APIs, Prettier, sql-formatter, yaml, Papa Parse, Marked, DOMPurify, uqr, jsQR, hash-wasm, jsdiff, cRonstrue, fflate |
 | 08 Audio/video | conversions, trim, extract audio | @ffmpeg/ffmpeg (MIT), but `@ffmpeg/core` is **GPL-2.0-or-later**: licence review |

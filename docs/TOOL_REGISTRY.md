@@ -7,7 +7,8 @@
 | File | Purpose |
 |---|---|
 | `src/registry/types.ts` | `ToolDefinition`, `ToolCategory`, `IconKey`, `ToolStatus` and related types |
-| `src/registry/tools.ts` | The tool entries (spreads in `imageTools()` and `pdfTools()`), plus planned, hidden entries |
+| `src/registry/tools.ts` | The tool entries (spreads in `aiTools()`, `imageTools()`, `pdfTools()`, `devTools()`, `textTools()`, `productivityTools()` and `fileTools()`), plus planned, hidden entries |
+| `src/registry/typed-tools.ts` | The 68 developer, text, productivity and file tool entries, built with one `make(category, defaults)` helper per category (shared privacy FAQ, steps, limits). Input markers: `text` (typed text), `values` (numbers and dates), `*` (any file) |
 | `src/registry/image-tools.ts` | The 33 image tool entries, built with a `tool()` helper (shared privacy FAQ, notes and formats) and `pair()` for the six format-pair converters |
 | `src/registry/ai-tools.ts` | The 2 AI tool entries (shared browsers, privacy and model FAQs, limits and model download info) |
 | `src/registry/pdf-tools.ts` | The 31 PDF tool entries, built with a small `tool()` helper that adds the shared privacy FAQ, notes and formats |
@@ -89,7 +90,21 @@ To switch off a verified tool (for example after a browser regression), set `ena
 
 **A new image tool** works the same way: a config in `src/tools/image/ui/configs.tsx` (reusing `PdfToolShell`), its ID in `src/tools/image/ids.ts`, and an entry in `image-tools.ts`. Pixel work goes in a `Recipe` for `renderImage` (`src/tools/image/render.ts`), which runs in `image.worker.ts`. Viewers set `outputFormats: []` and return a result `node` instead of a file.
 
+**A new developer, text or productivity tool** is a `FormTool` config in `src/tools/text/ui/dev.tsx`, `text.tsx` or `calc.tsx` (pure logic in `src/tools/text/core/`, with a unit test), its ID in `src/tools/text/ids.ts`, and an entry in `typed-tools.ts`. **A new file tool** is a config in `src/tools/file/configs.tsx`, its ID in `src/tools/file/ids.ts`, and an entry in `fileTools()`. The registry test fails if a config and its ID list disagree.
+
 ## Current tools
+
+Phase 07 tools (all **verified**; engines in each entry's `engine` field):
+
+| Category | IDs |
+|---|---|
+| developer (36) | `json-formatter`, `json-validator`, `json-minifier`, `xml-formatter`, `html-formatter`, `css-formatter`, `javascript-formatter`, `sql-formatter`, `yaml-formatter`, `base64-encoder-decoder`, `url-encoder-decoder`, `html-entity-encoder-decoder`, `jwt-decoder`, `uuid-generator`, `password-generator`, `random-string-generator`, `hash-generator`, `qr-code-generator`, `qr-code-reader`, `slug-generator`, `cron-expression-generator`, `json-to-csv`, `csv-to-json`, `json-to-yaml`, `yaml-to-json`, `json-to-xml`, `xml-to-json`, `regex-tester`, `unix-timestamp-converter`, `date-format-converter`, `markdown-preview`, `colour-converter`, `hex-to-rgb`, `rgb-to-hex`, `css-gradient-generator`, `css-shadow-generator` |
+| text (19) | `word-counter`, `character-counter`, `sentence-counter`, `paragraph-counter`, `text-case-converter`, `uppercase-converter`, `lowercase-converter`, `title-case-converter`, `remove-duplicate-lines`, `sort-text-lines`, `reverse-text`, `remove-extra-spaces`, `remove-empty-lines`, `find-and-replace`, `text-cleaner`, `text-diff-checker`, `reading-time-calculator`, `lorem-ipsum-generator`, `markdown-editor` |
+| productivity (10) | `unit-converter`, `percentage-calculator`, `date-calculator`, `age-calculator`, `time-duration-calculator`, `loan-calculator`, `bmi-calculator`, `tip-calculator`, `discount-calculator`, `file-size-converter` |
+| file (3) | `zip-file-creator`, `zip-file-extractor`, `file-checksum-generator` |
+
+Earlier phases:
+
 
 | ID | Category | Status | Engine |
 |---|---|---|---|

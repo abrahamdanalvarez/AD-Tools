@@ -2,7 +2,7 @@
 
 > Foundation: Phase 01 (fresh scaffold, `DECISIONS.md` D10–D16). Design system: Phase 02. App shell, registry, routing and the first tool: Phase 03 (D25–D31). PDF tools: Phase 04 (D32–D42). Image tools: Phase 05 (D43–D56). AI tools: Phase 06 (D57–D68).
 
-## Current state (Phase 06)
+## Current state (Phase 07)
 
 | Item | Location |
 |---|---|
@@ -16,6 +16,8 @@
 | PDF tools | `src/tools/pdf/`: `core/` (pure pdf-lib and qpdf code, unit-tested in Node), `browser/` (pdf.js rendering and text, canvas JPEG encoding, image normalising), `ops.ts` + `pdf.worker.ts` + `run.ts` (one worker for every operation), `ui/` (one config-driven `PdfToolShell`; `configs.tsx` holds the 31 tool configs). Registry entries are in `src/registry/pdf-tools.ts`. |
 | Image tools | `src/tools/image/`: `core/` (pure byte and pixel code: format sniffing, metadata stripping, pixel loops, sizes, ICO; unit-tested in Node), `decode.ts` (page-side decoding, safe SVG), `render.ts` + `image.worker.ts` + `run.ts` (one worker renders and encodes), `ui/` (configs for the 33 tools on the shared `PdfToolShell`, crop editor, colour picker, before/after comparison, viewers). Registry entries are in `src/registry/image-tools.ts`. |
 | AI tools | `src/tools/ai/`: `model.ts` (pinned model manifest), `segment.ts` (download, gzip and SHA-256 check, worker life cycle, mask cache), `segment.worker.ts` (ONNX Runtime Web session), `tensor.ts`, `composite.ts` (cutout, colour or image background), `configs.tsx` (2 tools on the shared `PdfToolShell`), `AiToolPage.tsx`. Registry entries are in `src/registry/ai-tools.ts`. Model build: `scripts/models/` (`fetch.ts`, `quantize.py`, `require-models.ts`). See `AI_MODELS.md`. |
+| Developer, text and productivity tools | `src/tools/text/`: `core/` (pure code for text, encoding, data formats, random values, cron, colour, time, calculators, formatters, regex and hashes; unit-tested in Node), `markdown.ts` (Marked + DOMPurify), `regex.ts` + `regex.worker.ts` (regex in a worker with a 2 s limit), `ui/shell.tsx` (one `FormToolShell` for all 64 typed-input tools, D70), `ui/dev.tsx`, `ui/text.tsx`, `ui/calc.tsx` (configs), and one lazy page per group (`DevToolPage`, `TextToolPage`, `CalcToolPage`) so each loads only its group's code |
+| File tools | `src/tools/file/`: `zip.ts` (fflate with archive-bomb limits, D76), `configs.tsx` (ZIP creator and extractor, checksums, QR code reader, on the shared `PdfToolShell`), `FileToolPage.tsx` |
 | Vendor assets | `scripts/vendor-assets.ts`: copies pdf.js CMaps, standard fonts, ICC profiles and decoder WASM to `dist/vendor/pdfjs/` (served from `node_modules` in dev). QuickJS, pdf.js's scripting engine, is excluded. Also stubs the Node built-ins that qpdf-wasm's loader imports. |
 | Workers | `src/lib/worker-bridge.ts` (`runWorker`, `runCancellable`, `CancelledError`) and `src/workers/protocol.ts` (progress, result and error messages) |
 | Shared helpers | `src/lib/files.ts` (sizes, extensions, `accept`, download), `src/lib/analytics.ts` (no-op adapter) |
@@ -27,7 +29,7 @@
 | Dev gallery | `src/app/Styleguide.tsx` at `/#styleguide`, dev only |
 | Apache rules | `public/.htaccess` → copied to `dist/` |
 | Unit tests | `src/**/*.test.ts(x)`, `scripts/**/*.test.ts`, Vitest + jsdom |
-| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`ai-tools`, `image-converter`, `image-tools`, `pdf-tools`). See `TESTING.md`. |
+| E2E tests | `e2e/`, Playwright against `dist/` served by `scripts/serve-dist.mjs`. Chromium runs everything; Firefox and WebKit run the tool specs (`ai-tools`, `image-converter`, `image-tools`, `pdf-tools`, `typed-tools`). See `TESTING.md`. |
 | Build | `npm run build` = `tsc --noEmit && vite build` → `dist/` (root-absolute `/` asset paths, D25) |
 
 ## Routing and static pages
@@ -85,6 +87,13 @@ Apache behaviour (mirrored by `scripts/serve-dist.mjs` in e2e):
 - **Runtime.** onnxruntime-web 1.31.1 in one long-lived module worker. It loads the WebGPU build when an adapter exists, otherwise the smaller CPU-only build, and falls back to WASM if WebGPU fails (D61). Single thread until COOP/COEP (Phase 09).
 - **Memory.** The model needs about 1.84 GB at peak (native measurement), under the 4 GB WebAssembly limit. The 1024 × 1024 export needed 6.4 GB and failed (D68). Cancel and leaving the page terminate the worker. Masks are cached per image in a WeakMap, so a new background doesn't re-run the AI (D62).
 - **Output.** The 512 mask is scaled to the image's full size and applied on a canvas: transparent PNG/WebP, a solid colour, or the user's own image (drawn to cover). Canvases are zeroed afterwards.
+
+### Developer, text and productivity tools
+
+- **Shell.** Each tool is a config: initial state, input fields and a `compute(state)` function. The shell recomputes 150 ms after the last change and drops stale results. Input stays in React state: never in the URL, storage or analytics (D70).
+- **Heavy libraries load on demand.** Prettier and its parsers, sql-formatter, yaml, Papa Parse, Marked, DOMPurify, uqr, jsQR, hash-wasm, jsdiff and cRonstrue are imported inside `compute`, so a tool page downloads only what it uses (D71).
+- **Untrusted input is never run.** Code is parsed and printed by Prettier, not evaluated. Regex runs in a worker that is terminated after 2 seconds (D74). XML uses `DOMParser`, which doesn't fetch external entities (D72). Markdown is sanitised and remote images are not loaded (D77).
+- **File tools** (ZIP, checksums, QR reader) reuse the file shell. Checksums and ZIP creation read files with `File.stream()` in chunks, so a large file isn't held twice.
 
 ## Constraints
 

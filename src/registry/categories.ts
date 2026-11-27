@@ -9,6 +9,6 @@ export const categories: CategoryInfo[] = [
   { id: "document", name: "Document Tools", description: "Convert between document formats.", icon: "file-type" },
   { id: "developer", name: "Developer Tools", description: "Format, encode, decode and generate.", icon: "code" },
   { id: "text", name: "Text Tools", description: "Count, compare and transform text.", icon: "type" },
-  { id: "productivity", name: "Productivity Tools", description: "Everyday helpers like QR codes.", icon: "list-checks" },
+  { id: "productivity", name: "Productivity Tools", description: "Calculators and converters for everyday sums.", icon: "list-checks" },
   { id: "file", name: "File Tools", description: "Zip, unzip and inspect files.", icon: "folder" },
 ];

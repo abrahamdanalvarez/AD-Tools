@@ -1,6 +1,7 @@
 import { aiTools } from "./ai-tools.ts";
 import { imageTools } from "./image-tools.ts";
 import { pdfTools } from "./pdf-tools.ts";
+import { devTools, fileTools, productivityTools, textTools } from "./typed-tools.ts";
 import type { BrowserSupport, ToolDefinition } from "./types";
 
 // The single source of truth for every Privora tool. Homepage, navigation,
@@ -14,6 +15,10 @@ export const tools: ToolDefinition[] = [
   ...aiTools(),
   ...imageTools(),
   ...pdfTools(),
+  ...devTools(),
+  ...textTools(),
+  ...productivityTools(),
+  ...fileTools(),
 
   // ── Planned (hidden until verified) ─────────────────────────────────────
   planned("annotate-pdf", "PDF Annotation", "pdf", "highlighter", "Highlight, underline and comment on PDF pages.", ["pdf"], ["pdf"], "pdf-lib + pdf.js", ["annotate pdf", "highlight pdf", "comment pdf"]),

@@ -4,7 +4,7 @@ _Last updated: 2026-11-27_
 
 ## Current phase
 
-**Phase 06: Local AI processing and background removal.** Complete. Stopped for review. Phase 07 has not started.
+**Phase 07: Developer, text and productivity tools.** Complete. Stopped for review. Phase 08 has not started.
 
 ## Completed tasks
 
@@ -83,6 +83,20 @@ _Last updated: 2026-11-27_
 - [x] Licences: ONNX Runtime LICENSE and ThirdPartyNotices, BiRefNet MIT notice (© 2024 ZhengPeng, © 2026 Studio Ludens V.O.F.) in `public/licences/`, credits page, `THIRD_PARTY_NOTICES.md`.
 - [x] Docs: `AI_MODELS.md` and `BROWSER_COMPATIBILITY.md` (new), `DECISIONS.md` (D57–D68), `LICENCES.md`, `TESTING.md`, `ARCHITECTURE.md`, `TOOL_REGISTRY.md`, `TOOL_INVENTORY.md`, `SECURITY_AUDIT.md`, `ROADMAP.md`.
 
+### Phase 07
+- [x] it-tools (GPL-3.0) reviewed as a checklist only. No code copied (D69).
+- [x] 68 tools verified and enabled:
+  - Developer (36): JSON Formatter, Validator and Minifier; XML, HTML, CSS, JavaScript, SQL and YAML Formatters; Base64, URL and HTML Entity Encoder/Decoder; JWT Decoder; UUID, Password, Random String and Hash Generators; QR Code Generator and Reader; Slug Generator; Cron Expression Generator; JSON↔CSV, JSON↔YAML, JSON↔XML; Regex Tester; Unix Timestamp and Date Format Converters; Markdown Preview; Colour Converter, HEX to RGB, RGB to HEX; CSS Gradient and Shadow Generators.
+  - Text (19): Word, Character, Sentence and Paragraph Counters; Text Case, Uppercase, Lowercase and Title Case Converters; Remove Duplicate Lines; Sort Text Lines; Reverse Text; Remove Extra Spaces; Remove Empty Lines; Find and Replace; Text Cleaner; Text Diff Checker; Reading Time Calculator; Lorem Ipsum Generator; Markdown Editor.
+  - Productivity (10): Unit, Percentage, Date, Age, Time Duration, Loan, BMI, Tip and Discount Calculators; File Size Converter. Each states its assumptions.
+  - File (3, evaluated and shipped): ZIP File Creator, ZIP File Extractor (zip bomb, size and path-traversal limits), File Checksum Generator.
+- [x] One shared `FormToolShell` for the 64 typed-input tools: live results, copy, download, reset, generate again, validation, clear errors. Input never goes to the URL, storage or analytics (D70).
+- [x] Safety: Web Crypto for passwords and UUIDs (D75), JWT decoding labelled as not verifying (D78), no code execution, regex in a worker with a 2 s limit (D74), sanitised Markdown with no remote images (D77), no XML external entities (D72), CSV formula guard (D79).
+- [x] 11 runtime libraries added, all permissive, exact pins, loaded only where needed (D71). Prettier's bundled third-party notices ship in `public/licences/`.
+- [x] Privacy notice for typed tools mentions typed text, not files (D81). Accessibility fixes found by axe: focusable scroll boxes, diff deletion contrast (D81).
+- [x] Small fixes found while testing: the unit converter result reads "1 m = 3.2808399 ft" (was "1 metres"), and the QR note counts modules without the quiet zone.
+- [x] Docs: `DECISIONS.md` (D69–D81), `TOOL_INVENTORY.md`, `TOOL_REGISTRY.md`, `TESTING.md`, `ARCHITECTURE.md`, `SECURITY_AUDIT.md`, `LICENCES.md`, `ROADMAP.md`, `BROWSER_COMPATIBILITY.md`, `THIRD_PARTY_NOTICES.md`, credits page.
+
 ## Pending tasks
 
 - [ ] **Owner:** choose the project licence (MIT recommended)
@@ -94,17 +108,19 @@ _Last updated: 2026-11-27_
 - [ ] **Owner:** confirm you're comfortable shipping pdf.js's Liberation Sans fonts (GPL-2.0 with font exception, unmodified, see `LICENCES.md`)
 - [ ] **Owner:** HEIC decision: ship libheif-js (LGPL-3.0, as a separate replaceable WASM file) or keep HEIC hidden (D47)
 - [ ] Later: OCR PDF and Image OCR (self-hosted Tesseract data, no caching of output) and PDF Annotation
-- [ ] **Owner:** commit Phase 06 (uncommitted in the working tree)
+- [ ] **Owner:** commit Phase 07 (uncommitted in the working tree; Phase 06 is committed)
 - [ ] **Owner:** read the BiRefNet training-data caveat (DIS5K non-commercial terms, `AI_MODELS.md`) before any commercial use
 - [ ] **Owner:** on any machine that builds the site, install Python 3, run `pip install -r scripts/models/requirements.txt`, then `npm run fetch-models` once
 - [ ] Test WebGPU on real GPU hardware, and the AI tools on real Safari and phones
 - [ ] Later: a WebGPU-only high-detail (1024) mode, an upscaler, image OCR
+- [ ] Later developer tools seen in it-tools but not built: IPv4 subnet calculator, OTP, chmod calculator, MIME types, BIP39 (licence-safe reimplementation only, D69)
 - [ ] Favourites (tool IDs only, as allowed by `PRIVACY.md`) were not part of the Phase 03 spec. Not built yet.
 
 ## Verified tools
 
 | Tool | Route | Verified in |
 |---|---|---|
+| 68 developer, text, productivity and file tools (full list in `TOOL_REGISTRY.md`) | `/json-formatter/`, `/word-counter/`, `/unit-converter/`, `/zip-file-extractor/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
 | AI Background Remover, AI Subject Mask | `/remove-background/`, `/ai-subject-mask/` | Chromium, Firefox, WebKit, CPU path (Playwright 1.65.1, Windows) |
 | 33 image tools (full list in `TOOL_REGISTRY.md`) | `/image-converter/`, `/image-compressor/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
 | 31 PDF tools (full list in `TOOL_REGISTRY.md`) | `/merge-pdf/`, `/split-pdf/`, … | Chromium, Firefox, WebKit (Playwright 1.65.1, Windows) |
@@ -112,6 +128,11 @@ _Last updated: 2026-11-27_
 Planned and hidden: OCR PDF, PDF Annotation, HEIC to JPG, HEIC to PNG, Image OCR.
 
 ## Known issues
+
+- The main JS bundle grew from 367.49 kB to 424.00 kB (130.55 kB gzip) because the registry now holds 136 tool entries and 46 more icons. Tool code and libraries stay lazy. Splitting registry text (FAQs, limitations) out of the main bundle is a later option.
+- Prettier's TypeScript parser is 893 kB (210 kB gzip). It loads only when TypeScript is chosen in the JavaScript Formatter.
+- Firefox and Safari, and Chrome for patterns without backreferences, may stop a catastrophic regex themselves and report no match instead of our 2 s timeout message (D74).
+- The QR Code Reader reads saved images only, not the camera. Cron supports the standard 5 fields only (no seconds or Quartz syntax).
 
 - AI tools run at 512 × 512, so single hairs can be softened on large photos. On the CPU they take about 10 s per photo on a desktop and need about 1.84 GB of memory. Phones may be slow or run out of memory. WebGPU was not tested on real hardware.
 - `dist/` is now 89 MB, mostly the model (41 MB) and the two ONNX Runtime WASM files (14.8 and 28.7 MB). Each file is under Cloudflare's 100 MB limit.
@@ -136,7 +157,7 @@ Planned and hidden: OCR PDF, PDF Annotation, HEIC to JPG, HEIC to PNG, Image OCR
 
 ## Architectural decisions
 
-See `DECISIONS.md` D1–D68. New this phase: D57 BiRefNet_lite, D58 8-bit weights and gzip, D59 fetch script, D60 hashed name and integrity check, D61 ONNX Runtime Web directly, D62 persistent worker and mask cache, D63 HTTP cache only, D64 subject mask shipped (upscaler and OCR not), D65 ONNX Runtime notices, D66 status labels, D67 AI privacy line, D68 the 512 × 512 export.
+See `DECISIONS.md` D1–D81. New this phase: D69 it-tools as reference only, D70 one typed-input shell, D71 library choices, D72 DOMParser for XML, D73 QR libraries and no camera, D74 regex worker timeout, D75 Web Crypto randomness, D76 ZIP limits, D77 Markdown sanitising, D78 JWT decode only, D79 CSV formula guard, D80 scope and shared duplicates, D81 typed privacy notice and accessibility fixes.
 
 ## Test results (2026-11-27, Node v24.12.0, npm 11.6.2, Playwright 1.65.1, Windows 10, Intel i5-9400)
 
@@ -144,27 +165,24 @@ See `DECISIONS.md` D1–D68. New this phase: D57 BiRefNet_lite, D58 8-bit weight
 |---|---|
 | `npm audit` | 0 vulnerabilities |
 | `npm run typecheck` | OK, no errors |
-| `npm test` | 11 files, **85/85 passed** (Phase 05's 80, plus 4 AI helper tests and 1 AI registry test) |
-| `npm run fetch-models` | Downloaded the pinned 512 export (SHA-256 matched), "quantised 127 weights: 176.8 MB -> 44.6 MB", wrote `public/models/birefnet-lite-int8-c64e1a89.onnx.gz` (40,880,751 bytes) with the expected SHA-256. A second run prints "Model is up to date". |
-| `npm run build` | OK. "static routes: 68 pages, sitemap.xml, robots.txt, 404.html". Main JS 367.49 kB (113.94 kB gzip), CSS 44.55 kB (12.58 kB gzip). Lazy: AiToolPage 8.27 kB (3.70 kB gzip), ONNX Runtime CPU WASM 14,848.85 kB (3,878.24 kB gzip), WebGPU WASM 28,747.73 kB (7,279.10 kB gzip). `dist/` total 89.2 MB. |
-| `npx playwright test` | **171/171 passed** in 3.6 min across Chromium, Firefox and WebKit |
+| `npm test` | 14 files, **119/119 passed** (Phase 06's 85, plus 24 developer/text/calculator core tests, 3 XML and Markdown tests, 6 ZIP tests and 1 registry test) |
+| `npm run build` | OK. "static routes: 136 pages, sitemap.xml, robots.txt, 404.html". Main JS 424.00 kB (130.55 kB gzip), CSS 47.07 kB (13.10 kB gzip). |
+| `npx playwright test` | **407/407 passed** in 5.7 min across Chromium, Firefox and WebKit |
 
 E2E added this phase (details in `TESTING.md`):
 
-- **`ai-tools.spec.ts` (3 tests × 3 browsers)** with the real model on the CPU path: failed download, progress labels, transparent PNG, solid colour JPG, own background image, a 4000 × 3000 image while offline, exactly one real model download, cancel and re-run, subject mask, damaged model, unsupported browser. The shared privacy guard runs on every test.
-- **`pdf-a11y.spec.ts`** also covers the AI background settings and result: axe WCAG 2.2 AA with 0 violations and no horizontal scroll at 1280 and 375 px, light and dark.
-
-Measured (details in `AI_MODELS.md`): CPU inference 9.1–10.2 s per photo in Chromium, Firefox and WebKit. Native peak memory 1.84 GB. Masks vs the float32 1024 model: IoU 0.9927–0.9975.
+- **`typed-tools.spec.ts` (76 tests × 3 browsers):** every one of the 64 typed-input tools with real input and known results, input kept out of the URL, reset, error message, generate again; Markdown script and remote-image blocking, XML external entity, runaway regex, password character sets; ZIP round trip, zip bombs and lying headers, checksums against standard vectors, and a QR round trip (generate PNG, read it back).
+- **`pdf-a11y.spec.ts`** also covers typed-tool results and errors, regex matches, Markdown editor, diff, QR, loan table, gradient, password and the ZIP file list: axe WCAG 2.2 AA with 0 violations and no horizontal scroll at 1280 and 375 px, light and dark.
 
 Problems found and fixed during the phase:
 
-- **The 1024 × 1024 model ran out of WebAssembly memory** (`std::bad_alloc` in `OrtRun`). Its deformable convolutions create 822 MB tensors (6.4 GB peak). Switched to the 512 × 512 export (D68).
-- **Quantisation first missed most MatMul weights**, because they also feed `Identity` nodes. Those consumers are now ignored when choosing the axis.
-- **The ONNX Runtime GitHub repository returned 404**, so its LICENSE and ThirdPartyNotices came from the official 1.31.1 wheel (D65).
-- **A build from Git Bash bundled React twice**, and every page crashed (`Cannot read properties of null (reading 'useEffect')`). Builds from PowerShell are correct. Recorded under Known issues.
-
-Cutouts of three photos were reviewed by eye.
+- **ymd date difference** gave wrong months across month ends. Rewritten to count whole months first (unit test).
+- **Diff deletions failed contrast** (red text on light red, about 4.4:1). Now normal text on the red background (axe).
+- **Scrollable result boxes weren't keyboard-focusable** (axe `scrollable-region-focusable`). Fixed in all 7.
+- **The privacy notice said "Your files"** on typed tools. It now describes typed text (D81).
+- **Runaway-regex test.** WebKit, Firefox and V8's linear-time fallback stop some catastrophic patterns themselves; the test uses a backreference in Chromium so the 2 s timeout is really exercised.
+- Wrong guesses in the first e2e expectations (QR version, slug for "&", unit wording) were corrected against the real output, which was checked by hand.
 
 ## Next development task
 
-**Phase 07: Developer, text and productivity tools** (see `ROADMAP.md`). Wait for owner approval to start.
+**Phase 08: Audio, video and document tools** (see `ROADMAP.md`). Needs the ffmpeg GPL decision first. Wait for owner approval to start.

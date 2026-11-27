@@ -16,7 +16,10 @@ How Privora is tested, and what a tool must pass before it is marked `verified`.
 ## Unit tests
 
 - Default environment is jsdom. Pure engine code that needs real `Uint8Array`/WASM behaviour uses `// @vitest-environment node` (the PDF core, qpdf and image core tests).
-- Registry tests check every entry's required fields, visibility, slugs and icons, and that every PDF, image and AI config has a matching ID and registry entry. AI entries must point at a model under `/models/`.
+- Registry tests check every entry's required fields, visibility, slugs and icons, and that every PDF, image, AI, developer, text, productivity and file config has a matching ID and a verified registry entry. AI entries must point at a model under `/models/`.
+- **Developer, text and productivity core** (`src/tools/text/core/core.test.ts`, Node): counting (graphemes, words, sentences, paragraphs), case conversion, line tools, cleaning, slugs, Base64/URL/entity round trips, JWT decoding and JWE detection, JSON/CSV/YAML conversion (formula guard, alias limit), cron parsing and next runs, colour conversion and contrast, timestamps and dates, units (exact factors, absolute zero), percentages, date differences (month ends), ages (29 February), durations (overnight), loans, BMI, tips, discounts, random values (no bias, every set present), regex jobs, hashes against known vectors.
+- **XML and Markdown** (`src/tools/text/dom.test.ts`, jsdom): XML formatting keeps comments and CDATA, XML↔JSON, and the Markdown sanitiser removes scripts, event handlers, `javascript:` links and remote images.
+- **ZIP** (`src/tools/file/zip.test.ts`, Node): create and extract round trip with duplicate names, non-ZIP input, entries that unpack bigger than declared, suspicious ratios, oversize entries and totals (sizes rewritten in the headers), more than 10,000 entries, and safe download names for `../` and Windows paths.
 - **AI helpers** (`src/tools/ai/tensor.test.ts`): ImageNet normalisation into a planar tensor, sigmoid to alpha, SHA-256 against Node's, and the hashed model file name.
 - **PDF core** (`src/tools/pdf/core/core.test.ts`, `qpdf.test.ts`): range parsing; PDF detection by header; damaged-file errors; merge, split, extract, delete, reorder, reverse, duplicate and rotate; coordinates on rotated pages; watermark, page numbers and text as real text; WinAnsi limits; images to PDF (JPEG embedded byte for byte, EXIF orientation, A4); metadata edit and strip; flatten; image extraction; compress (shrinks photos, keeps text, returns the original when it can't help); repair of a broken cross-reference table; AES-256 protect and unlock, wrong and empty passwords.
 - **Image core** (`src/tools/image/core/core.test.ts`): format sniffing from bytes; animation detection (GIF, WebP, APNG); lossless metadata stripping for JPEG, PNG and WebP (scan data compared byte for byte, orientation kept); pixel adjustments, blur and palette; resize maths and limits; ICO writing; Base64 decoding; oxipng shrinking a PNG.
@@ -32,7 +35,7 @@ All fixtures are synthetic. No real documents are used or committed.
 
 ## E2E tests (Playwright)
 
-Chromium runs every spec. Firefox and WebKit run the tool specs (`ai-tools.spec.ts`, `image-converter.spec.ts`, `image-tools.spec.ts`, `pdf-tools.spec.ts`), set by `testMatch` in `playwright.config.ts`.
+Chromium runs every spec. Firefox and WebKit run the tool specs (`ai-tools.spec.ts`, `image-converter.spec.ts`, `image-tools.spec.ts`, `pdf-tools.spec.ts`, `typed-tools.spec.ts`), set by `testMatch` in `playwright.config.ts`.
 
 | Spec | Covers |
 |---|---|
@@ -42,6 +45,7 @@ Chromium runs every spec. Firefox and WebKit run the tool specs (`ai-tools.spec.
 | `image-converter.spec.ts` | A real conversion with an output signature check, rejection and error states |
 | `pdf-tools.spec.ts` | Every enabled PDF tool on real synthetic files, checking the downloaded output (see below) |
 | `image-tools.spec.ts` | Every image tool on synthetic files: transparency, format pairs, animation warning, hostile SVG, batch ZIP names, compression, resize/crop/rotate/flip, metadata removal, effects, change settings, viewers, Base64 round trip, favicons, comparison, damaged and disguised files |
+| `typed-tools.spec.ts` | Every developer, text, productivity and file tool through its page (see below) |
 | `ai-tools.spec.ts` | AI Background Remover and AI Subject Mask with the real self-hosted model (see below) |
 | `pdf-a11y.spec.ts` | axe and no horizontal scroll on interactive PDF, image and AI states (page picker, reorder, placement editor, signature, crop editor, colour picker, before/after result, AI background settings and result) at 1280 and 375 px, light and dark |
 
@@ -75,9 +79,21 @@ Playwright's browsers have no WebGPU here, so the tests prove the CPU (WebAssemb
 
 **Firefox and WebP downloads.** Firefox opens a downloaded `.webp` in a new tab instead of reporting a download, so `run()` in `e2e/fixtures.ts` captures the blob from the download link in Firefox, for WebP only. Every other case uses Playwright's download event.
 
-### Privacy guard (every PDF, image and AI test)
+### What the developer, text, productivity and file e2e tests check
 
-An automatic fixture in `e2e/fixtures.ts`, shared by `pdf-tools.spec.ts`, `image-tools.spec.ts` and `ai-tools.spec.ts`, fails the test when:
+- **Output.** Each of the 64 typed-input tools gets real input and its live result is checked against known values (formatted code, encodings, hashes against standard test vectors, conversions, counts, calculations, dates). Generators are checked by pattern (UUID v4 format, password length and character sets) and Generate again gives new values.
+- **Input stays private.** After typing, the page address has no query or fragment, and the privacy notice is shown. The guard checks no request and no storage.
+- **Errors and reset.** Invalid JSON shows the error; Reset clears the input.
+- **Markdown safety.** Scripts, event handlers and `javascript:` links are removed; a remote image is replaced with a notice and never requested.
+- **XML external entities.** A DOCTYPE with an external entity: nothing is fetched and no content appears.
+- **Runaway regex.** A catastrophic pattern is stopped (Chromium: the 2 s worker timeout; Firefox and WebKit may give up on their own) and the page still works.
+- **ZIP.** Create a ZIP and unzip it in Node; open it in the extractor and download a file. Zip bombs (declared sizes rewritten), totals over 4 GB, non-ZIP files and entries that unpack bigger than declared are all refused. The blocked `../../evil.txt` entry has its Download button disabled. Saving under the base name is covered by the unit test.
+- **Checksums.** SHA-256 and MD5 of "abc" against the standard vectors, and the compare box with a prefixed, uppercase checksum.
+- **QR round trip.** Generate a PNG, read it back with the QR Code Reader, and get the same text.
+
+### Privacy guard (every PDF, image, AI and typed-tool test)
+
+An automatic fixture in `e2e/fixtures.ts`, shared by `pdf-tools.spec.ts`, `image-tools.spec.ts`, `ai-tools.spec.ts` and `typed-tools.spec.ts`, fails the test when:
 
 - any request is not a GET (no uploads of any kind),
 - any request goes to another origin,
@@ -91,7 +107,7 @@ An automatic fixture in `e2e/fixtures.ts`, shared by `pdf-tools.spec.ts`, `image
 A tool gets `status: "verified"` and `enabled: true` only after:
 
 1. Its unit tests pass.
-2. Its e2e test processes a real file and checks the output in Chromium, Firefox and WebKit.
+2. Its e2e test processes a real file or real input and checks the output in Chromium, Firefox and WebKit.
 3. The privacy guard passes.
 4. Its interactive states pass axe with no horizontal scroll on mobile.
 

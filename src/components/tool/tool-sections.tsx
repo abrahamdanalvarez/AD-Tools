@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/feedback";
 import type { Faq, ToolDefinition } from "@/registry/types";
 
 /** Standard privacy notice. Only states what the architecture guarantees. */
-export function PrivacyNotice({ ai = false }: { ai?: boolean }) {
+export function PrivacyNotice({ ai = false, typed = false }: { ai?: boolean; typed?: boolean }) {
   return (
     <aside
       aria-label="Privacy"
@@ -17,8 +17,9 @@ export function PrivacyNotice({ ai = false }: { ai?: boolean }) {
       <div>
         <p className="font-semibold">100% On-Device Processing</p>
         <p className="mt-1 text-muted-foreground">
-          Your files are processed directly in your browser. They are never uploaded to our servers, stored by our
-          website or sent to external processing services.
+          {typed
+            ? "What you type or paste is processed directly in your browser. It is never uploaded to our servers, stored by our website, added to the page address or sent to external processing services."
+            : "Your files are processed directly in your browser. They are never uploaded to our servers, stored by our website or sent to external processing services."}
         </p>
         {ai && (
           <p className="mt-1 text-muted-foreground">
@@ -33,16 +34,23 @@ export function PrivacyNotice({ ai = false }: { ai?: boolean }) {
 
 export function SupportedFormats({ tool }: { tool: ToolDefinition }) {
   // "jpeg" is accepted as an extension but shown once, as JPG.
+  // "*" means any file; "text" and "values" mark tools you type into instead of choosing a file.
+  const names: Record<string, string> = { "*": "Any file", text: "Typed or pasted text", values: "Typed values" };
   const list = (f: string[]) =>
-    [...new Set(f.map((x) => (x === "jpeg" ? "jpg" : x)))].map((x) => x.toUpperCase()).join(", ");
+    [...new Set(f.map((x) => (x === "jpeg" ? "jpg" : x)))].map((x) => names[x] ?? x.toUpperCase()).join(", ");
+  const typed = tool.inputFormats.every((f) => f === "text" || f === "values");
   return (
     <dl className="grid gap-2 text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
       <dt className="font-medium">Accepts</dt>
       <dd className="text-muted-foreground">{list(tool.inputFormats)}</dd>
       <dt className="font-medium">Creates</dt>
       <dd className="text-muted-foreground">{tool.outputFormats.length ? list(tool.outputFormats) : "Nothing to download: results show on the page"}</dd>
-      <dt className="font-medium">Recommended size</dt>
-      <dd className="text-muted-foreground">Up to {tool.maxFileSizeMB} MB</dd>
+      {!typed && (
+        <>
+          <dt className="font-medium">Recommended size</dt>
+          <dd className="text-muted-foreground">Up to {tool.maxFileSizeMB} MB</dd>
+        </>
+      )}
       {tool.model && (
         <>
           <dt className="font-medium">One-time download</dt>

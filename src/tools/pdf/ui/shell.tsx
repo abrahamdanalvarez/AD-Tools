@@ -101,7 +101,9 @@ export function PdfToolShell<S>({ tool, config }: { tool: ToolDefinition; config
   const ctx: Ctx | null = files.length > 0 ? { files, first: files[0] } : null;
 
   const errors: Record<string, string> = config.errors ?? pdfErrorMessages;
-  const messageFor = (err: unknown) => errors[err instanceof Error ? err.message : ""] ?? errors.unknown;
+  // InputError messages are written for users and shown as is.
+  const messageFor = (err: unknown) =>
+    err instanceof Error && err.name === "InputError" ? err.message : (errors[err instanceof Error ? err.message : ""] ?? errors.unknown);
 
   const inspect = async (file: File): Promise<PickedFile | null> => {
     if (config.inspectFile) {
@@ -407,7 +409,7 @@ function AddMore({ formats, onFiles, onReject }: { formats: string[]; onFiles: (
         onChange={(e) => {
           const list = Array.from(e.target.files ?? []);
           e.target.value = "";
-          const ok = list.filter((f) => formats.includes(f.name.slice(f.name.lastIndexOf(".") + 1).toLowerCase()));
+          const ok = list.filter((f) => formats.includes("*") || formats.includes(f.name.slice(f.name.lastIndexOf(".") + 1).toLowerCase()));
           if (ok.length < list.length) onReject(`Unsupported file type. Choose a ${formats.map((x) => x.toUpperCase()).join(", ")} file.`);
           if (ok.length) onFiles(ok);
         }}

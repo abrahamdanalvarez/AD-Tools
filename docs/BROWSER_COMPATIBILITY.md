@@ -19,6 +19,7 @@ Not tested: real Safari on macOS or iOS, Android browsers, real phones, and WebG
 | PDF tools | See each tool's registry entry | | | Module workers, WebAssembly (qpdf), pdf.js legacy build |
 | Image tools | See each tool's registry entry | | | `createImageBitmap`, canvas encoding, module workers |
 | AI tools | 111 | 114 | 16.4 | Module workers, WebAssembly SIMD, `DecompressionStream` |
+| Developer, text, productivity and file tools | 111 | 114 | 16.4 | `Intl.Segmenter`, module workers (regex), `crypto.randomUUID`, `File.stream()`, WebAssembly (hash-wasm) |
 
 ## AI tools
 
@@ -36,3 +37,6 @@ Not tested: real Safari on macOS or iOS, Android browsers, real phones, and WebG
 - **Safari can't encode WebP.** WebP output isn't offered there, and the WebP converters say why.
 - **Firefox opens downloaded `.webp` files in a new tab.** The download still works for the user. The e2e helper handles it (`TESTING.md`).
 - **Fonts for meme and watermark text** come from the device, so the look varies.
+- **Runaway regular expressions.** Chromium runs them until our 2 s worker limit stops them. Firefox and Safari may stop some catastrophic patterns themselves and report no match. Either way the page stays usable (D74).
+- **XML external entities.** Chromium leaves them empty; other engines may reject the document. None of them fetch anything.
+- **Word and sentence counts** use the browser's `Intl.Segmenter`, so results can differ slightly between engines for unusual punctuation.

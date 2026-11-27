@@ -24,7 +24,7 @@ export function FilePicker({ formats, multiple = false, onFiles, onReject }: Fil
   const accept = (list: FileList | null) => {
     const files = Array.from(list ?? []);
     if (files.length === 0) return;
-    const ok = files.filter((f) => formats.includes(extensionOf(f.name)));
+    const ok = formats.includes("*") ? files : files.filter((f) => formats.includes(extensionOf(f.name)));
     if (ok.length < files.length) {
       onReject?.(`Unsupported file type. Choose a ${formats.map((f) => f.toUpperCase()).join(", ")} file.`);
     }

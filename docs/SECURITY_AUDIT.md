@@ -1,5 +1,16 @@
 # Security audit
 
+## Phase 07 update (2026-11-27)
+
+- **New runtime dependencies** (exact pins, from their official npm packages): prettier 3.10.1, sql-formatter 15.9.0 (+ nearley 2.20.1), yaml 2.9.1, papaparse 5.7.1, marked 18.2.0, dompurify 3.4.17, uqr 0.1.3, jsqr 1.4.0, hash-wasm 4.13.0, diff 9.0.0, cronstrue 3.39.0. `npm audit`: 0 vulnerabilities. The e2e privacy guard saw no requests from any of them.
+- **No code execution.** Formatters parse and print; typed input never reaches `eval`, `Function`, `innerHTML` or a script tag. The Markdown preview is DOMPurify-sanitised and inserted with `replaceChildren`. E2E confirms a `<script>`, an `onerror` handler and a `javascript:` link don't survive, and a remote image is never requested (D77).
+- **Denial of service by input.** Regex runs in a worker terminated after 2 s (D74). Text fields are capped at 5 million characters and the diff at 500,000. YAML refuses more than 100 aliases ("billion laughs"). ZIP extraction is guarded by entry, size and ratio limits and counts real output bytes, because headers can lie (D76; unit and e2e tested with rewritten headers).
+- **Path traversal.** ZIP entries are saved under their base name only (`../../x` becomes `x`). Nested archives are never opened.
+- **XML external entities.** Not fetched (DOMParser). E2E checks that no request leaves the page (D72).
+- **Randomness.** Passwords, strings and UUIDs use Web Crypto with rejection sampling (D75).
+- **Misleading results.** JWT decoding is labelled as not verifying (D78). The QR reader never opens links by itself and warns about scam links (D73). CSV output is protected against formula injection (D79).
+- **Privacy.** Typed input is never put in the URL, storage or analytics. The e2e privacy guard runs on every typed-tool test in Chromium, Firefox and WebKit.
+
 ## Phase 06 update (2026-11-27)
 
 - **New runtime dependency:** onnxruntime-web 1.31.1 (MIT), exact pin. `npm audit`: 0 vulnerabilities. Its WebAssembly builds have no telemetry (ONNX Runtime's privacy notice). The WASM files and the model are served from our origin.

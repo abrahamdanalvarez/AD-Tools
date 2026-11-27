@@ -48,6 +48,26 @@ Evaluated and not added: utif (MIT, TIFF; its globals don't bundle, D48), libhei
 | onnxruntime-web dependencies not bundled | flatbuffers 25.9.23 (Apache-2.0), protobufjs 7.6.6 (BSD-3-Clause), long 5.3.2 (Apache-2.0), guid-typescript 1.0.9 (ISC), platform 1.3.6 (MIT) | | Installed with the package, but absent from the two ORT bundles Privora loads (checked by searching them). |
 | BiRefNet_lite weights (ONNX, 512 × 512) | studioludens/birefnet-lite-512 revision 962e679 | MIT © 2024 ZhengPeng, © 2026 Studio Ludens V.O.F. | Weights quantised to 8 bits by Privora. Licence text in `public/licences/birefnet-LICENSE.txt`. Training-data caveat in `AI_MODELS.md`. |
 
+**Phase 07 additions, shipped (verified from `node_modules`, 2026-11-27; all pinned exactly, `npm audit` 0):**
+
+| Package | Version | Licence | Notes |
+|---|---|---|---|
+| prettier | 3.10.1 | MIT © James Long and contributors | Only `prettier/standalone` and the babel, estree, typescript, postcss and html plugins, loaded on demand. The plugins bundle other projects' code; Prettier's `THIRD-PARTY-NOTICES.md` ships unmodified at `public/licences/prettier-THIRD-PARTY-NOTICES.md`. |
+| sql-formatter | 15.9.0 | MIT © ZeroTurnaround LLC, George Leslie-Waksman and contributors | Bundles **nearley 2.20.1** (MIT © Kartik Chandra, Tim Radvan). Its other dependency, argparse (PSF-2.0), is for the CLI only and is not in `dist/` (checked by searching the bundles). |
+| yaml | 2.9.1 | ISC © Eemeli Aro | No dependencies. |
+| papaparse | 5.7.1 | MIT © 2015 Matthew Holt | No dependencies. `@types/papaparse` 5.5.2 (MIT) is dev only. |
+| marked | 18.2.0 | MIT © MarkedJS, Christopher Jeffrey | No dependencies. |
+| dompurify | 3.4.17 | MPL-2.0 OR Apache-2.0 © Cure53 | Used under Apache-2.0. No NOTICE file. Its build inlines small Babel helpers (MIT © Facebook, Inc.). |
+| uqr | 0.1.3 | MIT © Project Nayuki, Anthony Fu | No dependencies. |
+| jsqr | 1.4.0 | Apache-2.0 © Cosmo Wolfe | No dependencies, no NOTICE file. |
+| hash-wasm | 4.13.0 | MIT © 2020 Dani Biró | WASM is embedded in the JS. |
+| diff (jsdiff) | 9.0.0 | BSD-3-Clause © 2009-2015 Kevin Decker | Licence text reproduced in `THIRD_PARTY_NOTICES.md` (binary redistribution clause). |
+| cronstrue | 3.39.0 | MIT © 2017 Brady Holt | English locale only. |
+
+Reused, already shipped: fflate 0.8.3 (ZIP tools).
+
+Evaluated and not added: **it-tools** (CorentinTh, GPL-3.0): used as a feature checklist only, no code, text or assets copied (D69). fast-xml-parser and xml-formatter (more dependencies; the browser's DOMParser does the job, D72). qrcode (MIT, larger and needs a canvas shim; uqr is dependency-free, D73). crypto-js (MD5 and SHA-1 are covered by hash-wasm; passwords use Web Crypto, D75). zip.js (fflate already ships, D76).
+
 **Dev only (not shipped):** Python packages for `scripts/models/quantize.py`: numpy 2.5.5 (BSD-3-Clause), onnx 1.23.2 (Apache-2.0), protobuf 7.36.2 (BSD-3-Clause), ml_dtypes 0.7.0 (Apache-2.0).
 
 **Liberation Sans.** pdf.js uses these fonts to draw text in PDFs that rely on the standard Helvetica font without embedding it. They are served unmodified as separate files, with Red Hat's licence file beside them. That is distribution under GPL-2.0 (with its font exception), so the source must stay available: it is the TTF files themselves, and upstream at https://github.com/liberationfonts/liberation-fonts. This does not affect the licence of Privora's own code.

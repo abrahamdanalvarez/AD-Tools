@@ -11,7 +11,7 @@ Each phase ends with `PROJECT_STATUS.md` updated, real test results recorded, an
 | 04 | PDF tools | Merge, split, compress, rotate, reorder, extract, protect/unlock, convert, OCR. **Done: 31 tools. OCR and annotation deferred (D39).** |
 | 05 | Image tools | Convert, resize, compress, crop, metadata stripping. **Done: 33 tools. HEIC (licence) and OCR deferred (D47, D39).** |
 | 06 | AI background removal and local AI tools | ONNX Runtime Web (WebGPU with WASM fallback), self-hosted models with verified redistribution rights. **Done: AI Background Remover and AI Subject Mask (BiRefNet_lite, 512 × 512, 8-bit). Upscaler, semantic segmentation and image OCR not shipped (D64).** |
-| 07 | Developer, text and productivity tools | JSON/YAML, encoders, hashing, QR, text utilities, etc. |
+| 07 | Developer, text and productivity tools | JSON/YAML, encoders, hashing, QR, text utilities, etc. **Done: 68 tools (36 developer, 19 text, 10 productivity, 3 file).** |
 | 08 | Audio, video and document tools | ffmpeg.wasm conversions, trimming, extraction, document conversion. |
 | 09 | Privacy, security and analytics | CSP and security headers (`.htaccess`), network-egress and storage audits, an optional analytics adapter (off by default). |
 | 10 | SEO, accessibility and legal pages | Metadata, OG, sitemap, structured data, WCAG 2.2 AA, privacy policy, terms, licences page. |
